@@ -1,4 +1,4 @@
-s3_bucket:
+blob_container:
   io_files: wafer-io-files-03e0100
   logs: wafer-logs-4e1f3bd
   raw_train_data: wafer-raw-data-140436f
