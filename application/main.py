@@ -4,7 +4,7 @@ from fastapi.responses import Response
 from fastapi.templating import Jinja2Templates
 from uvicorn import run as app_run
 
-from pipelines.prediction_pipeline import Pred_Pipeline
+from pipelines.prediction_pipeline import _Re
 from pipelines.train_pipeline import Train_Pipeline
 from utils.main_utils import Main_Utils
 from utils.read_params import read_params

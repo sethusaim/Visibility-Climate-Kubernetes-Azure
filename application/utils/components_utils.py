@@ -20,7 +20,7 @@ class Component:
         self.log_writer.start_log("start", self.class_name, method_name)
 
         try:
-            content = self.blob.read_yaml_as_str(fname,container)
+            content = self.blob.read_yaml_as_str(fname, container)
 
             self.log_writer.log(
                 f"Got {fname} train component from {container}", self.log_file
