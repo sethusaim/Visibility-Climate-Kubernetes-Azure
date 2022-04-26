@@ -7,8 +7,8 @@ from utils.read_params import read_params
 class Pred_Component:
     def __init__(self):
         self.config = read_params()
-
-        self.bucket = self.config["s3_bucket"]
+        
+        self.container = self.config["blob_container"]
 
         self.comp_log = self.config["log"]["pred_comp"]
 
