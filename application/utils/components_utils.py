@@ -7,7 +7,7 @@ from utils.logger import App_Logger
 class Component:
     def __init__(self, log_file):
         self.log_writer = App_Logger()
-        
+
         self.blob = Blob_Operation()
 
         self.class_name = self.__class__.__name__
@@ -21,7 +21,7 @@ class Component:
 
         try:
             # content = self.s3.read_yaml_as_str(fname, bucket)
-            
+
             content = ""
 
             self.log_writer.log(

@@ -1,3 +1,4 @@
+from io import StringIO
 from os import environ, remove
 
 from azure.storage.blob import BlobServiceClient, ContainerClient
@@ -158,6 +159,73 @@ class Blob_Operation:
                     f"Removed option is set to {delete}, not removing the {local_fname} from local",
                     log_file,
                 )
+
+        except Exception as e:
+            self.log_writer.exception_log(e, self.class_name, method_name, log_file)
+
+    def get_object(self, fname, container, log_file):
+        method_name = self.get_object.__name__
+
+        try:
+            client = self.get_container_client(container, log_file)
+
+            f = client.download_blob(blob=fname)
+
+            self.log_writer.log(
+                f"Got {fname} info from {container} container", log_file
+            )
+
+            self.log_writer.start_log("exit", self.class_name, method_name, log_file)
+
+            return f
+
+        except Exception as e:
+            self.log_writer.exception_log(e, self.class_name, method_name, log_file)
+
+    def read_object(self, object, log_file, decode=True, make_readable=False):
+        method_name = self.read_object.__name__
+
+        self.log_writer.start_log("start", self.class_name, method_name, log_file)
+
+        try:
+            func = (
+                lambda: object.readall().decode()
+                if decode is True
+                else object.readall()
+            )
+
+            self.log_writer.log(
+                f"Read {object} object with decode as {decode}", log_file
+            )
+
+            conv_func = lambda: StringIO(func()) if make_readable is True else func()
+
+            self.log_writer.start_log("exit", self.class_name, method_name, log_file)
+
+            return conv_func()
+
+        except Exception as e:
+            self.log_writer.exception_log(e, self.class_name, method_name, log_file)
+
+    def read_yaml_as_str(self, fname, container, log_file):
+        method_name = self.read_yaml_as_str.__name__
+
+        self.log_writer.start_log("start", self.class_name, method_name, log_file)
+
+        try:
+            f_obj = self.get_object(fname, container, log_file)
+
+            self.log_writer.log(
+                f"Got the {fname} object from {container} container", log_file
+            )
+
+            content = self.read_object(f_obj, log_file)
+
+            self.log_writer.log(f"Read the {f_obj} object", log_file)
+
+            self.log_writer.start_log("exit", self.class_name, method_name, log_file)
+
+            return content
 
         except Exception as e:
             self.log_writer.exception_log(e, self.class_name, method_name, log_file)
