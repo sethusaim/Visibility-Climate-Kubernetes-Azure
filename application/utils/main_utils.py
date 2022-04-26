@@ -44,7 +44,7 @@ class Main_Utils:
                 )
 
             self.log_writer.log(
-                f"Uploaded logs to {self.bucket['logs']}", self.log_file
+                f"Uploaded logs to {self.container['logs']}", self.log_file
             )
 
             rmtree(self.log_dir)

@@ -28,7 +28,7 @@ class Pred_Component:
 
         try:
             comp = self.kfp_comp.load_kfp_component(
-                self.pred_comp["data_trans"], self.bucket["components"]
+                self.pred_comp["data_trans"], self.container["components"]
             )
 
             self.log_writer.log("Got pred data transform component", self.comp_log)
@@ -52,7 +52,7 @@ class Pred_Component:
 
         try:
             comp = self.kfp_comp.load_kfp_component(
-                self.pred_comp["preprocess"], self.bucket["components"]
+                self.pred_comp["preprocess"], self.container["components"]
             )
 
             self.log_writer.log("Got preprocessing component", self.comp_log)
@@ -74,7 +74,7 @@ class Pred_Component:
 
         try:
             comp = self.kfp_comp.load_kfp_component(
-                self.pred_comp["db_operation"], self.bucket["components"]
+                self.pred_comp["db_operation"], self.container["components"]
             )
 
             self.log_writer.log("Got pred db operation component", self.comp_log)
@@ -98,7 +98,7 @@ class Pred_Component:
 
         try:
             comp = self.kfp_comp.load_kfp_component(
-                self.pred_comp["model"], self.bucket["components"]
+                self.pred_comp["model"], self.container["components"]
             )
 
             self.log_writer.log("Got prediction model component", self.comp_log)
@@ -122,7 +122,7 @@ class Pred_Component:
 
         try:
             comp = self.kfp_comp.load_kfp_component(
-                self.pred_comp["preprocessing"], self.bucket["components"]
+                self.pred_comp["preprocessing"], self.container["components"]
             )
 
             self.log_writer.log("Got preprocessing prediction component", self.comp_log)
@@ -146,7 +146,7 @@ class Pred_Component:
 
         try:
             comp = self.kfp_comp.load_kfp_component(
-                self.pred_comp["raw_data_val"], self.bucket["components"]
+                self.pred_comp["raw_data_val"], self.container["components"]
             )
 
             self.log_writer.log("Got raw_pred_data_validation_component", self.comp_log)

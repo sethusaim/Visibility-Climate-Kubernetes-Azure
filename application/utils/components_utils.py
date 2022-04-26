@@ -14,18 +14,16 @@ class Component:
 
         self.log_file = log_file
 
-    def load_kfp_component(self, fname, bucket):
+    def load_kfp_component(self, fname, container):
         method_name = self.load_kfp_component.__name__
 
         self.log_writer.start_log("start", self.class_name, method_name)
 
         try:
-            # content = self.s3.read_yaml_as_str(fname, bucket)
-
-            content = ""
+            content = self.blob.read_yaml_as_str(fname,container)
 
             self.log_writer.log(
-                f"Got {fname} train component from {bucket}", self.log_file
+                f"Got {fname} train component from {container}", self.log_file
             )
 
             comp = load_component_from_text(content)
