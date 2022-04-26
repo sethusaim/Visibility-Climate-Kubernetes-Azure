@@ -15,8 +15,6 @@ class Run:
 
         self.clustering_log = self.config["log"]["clustering"]
 
-        
-
         self.utils = Main_Utils()
 
         self.log_writer = App_Logger()
@@ -33,23 +31,25 @@ class Run:
         )
 
         try:
-            X = self.s3.read_csv(
+            X = self.blob.read_csv(
                 self.files["features"],
-                self.bucket["feature_store"],
+                self.container["feature_store"],
                 self.clustering_log,
             )
 
             self.log_writer.log(
-                f"Read the features file for training from {self.bucket['feature_store']} bucket",
+                f"Read the features file for training from {self.container['feature_store']} container",
                 self.clustering_log,
             )
 
-            Y = self.s3.read_csv(
-                self.files["targets"], self.bucket["feature_store"], self.clustering_log
+            Y = self.blob.read_csv(
+                self.files["targets"],
+                self.container["feature_store"],
+                self.clustering_log,
             )
 
             self.log_writer.log(
-                f"Read the labels for training from {self.bucket['feature_store']} bucket",
+                f"Read the labels for training from {self.container['feature_store']} container",
                 self.clustering_log,
             )
 
@@ -80,19 +80,19 @@ class Run:
                     self.files["targets"], i, self.clustering_log
                 )
 
-                self.s3.upload_df_as_csv(
+                self.blob.upload_df_as_csv(
                     cluster_features,
                     cluster_feats_fname,
                     cluster_feats_fname,
-                    self.bucket["feature_store"],
+                    self.container["feature_store"],
                     self.clustering_log,
                 )
 
-                self.s3.upload_df_as_csv(
+                self.blob.upload_df_as_csv(
                     cluster_label,
                     cluster_label_fname,
                     cluster_label_fname,
-                    self.bucket["feature_store"],
+                    self.container["feature_store"],
                     self.clustering_log,
                 )
 

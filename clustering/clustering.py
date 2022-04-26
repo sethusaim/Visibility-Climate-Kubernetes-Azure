@@ -2,7 +2,7 @@ from kneed import KneeLocator
 from matplotlib.pyplot import plot, savefig, title, xlabel, ylabel
 from sklearn.cluster import KMeans
 
-
+from blob_operations import Blob_Operation
 from utils.logger import App_Logger
 from utils.read_params import read_params
 
@@ -36,7 +36,7 @@ class KMeans_Clustering:
 
         self.files = self.config["files"]
 
-        
+        self.blob = Blob_Operation()
 
         self.log_writer = App_Logger()
 
@@ -45,9 +45,9 @@ class KMeans_Clustering:
     def draw_elbow_plot(self, data):
         """
         Method Name :   draw_elbow_plot
-        Description :   This method saves the plot to s3 bucket and decides the optimum number of clusters to the file.
+        Description :   This method saves the plot to blob container and decides the optimum number of clusters to the file.
         
-        Output      :   An elbow plot figure saved to input files bucket
+        Output      :   An elbow plot figure saved to input files container
         On Failure  :   Write an exception log and then raise an exception
         
         Version     :   1.2
@@ -79,10 +79,10 @@ class KMeans_Clustering:
 
             self.log_writer.log("Saved elbow plot with local copy", self.log_file)
 
-            self.s3.upload_file(
+            self.blob.upload_file(
                 self.files["elbow_plot"],
                 self.files["elbow_plot"],
-                self.bucket["io_files"],
+                self.container["io_files"],
                 self.log_file,
             )
 
@@ -123,11 +123,11 @@ class KMeans_Clustering:
 
             self.y_kmeans = self.kmeans.fit_predict(data)
 
-            self.s3.save_model(
+            self.blob.save_model(
                 self.kmeans,
                 self.model_dir["trained"],
-                self.bucket["model"],
                 self.model_save_format,
+                self.container["model"],
                 self.log_file,
             )
 
