@@ -102,7 +102,7 @@ class Raw_Train_Data_Validation:
     def get_regex_pattern(self):
         """
         Method Name :   get_regex_pattern
-        Description :   This method gets regex pattern from input files s3 bucket
+        Description :   This method gets regex pattern from input files blob container
 
         Output      :   A regex pattern is extracted
         On Failure  :   Write an exception log and then raise an exception
@@ -117,11 +117,11 @@ class Raw_Train_Data_Validation:
                 "start", self.class_name, method_name, self.train_log["general"],
             )
 
-            regex = self.s3.read_text(
-                self.files["regex"], self.bucket["io_files"], self.train_log["general"],
+            regex = self.blob.read_text(
+                self.files["regex"],
+                self.container["io_files"],
+                self.train_log["general"],
             )
-            
-            
 
             self.log_writer.log(f"Got {regex} pattern", self.train_log["general"])
 
@@ -135,40 +135,6 @@ class Raw_Train_Data_Validation:
             self.log_writer.exception_log(
                 e, self.class_name, method_name, self.train_log["general"],
             )
-
-    def create_dirs_for_good_bad_data(self, log_file):
-        """
-        Method Name :   create_dirs_for_good_bad_data
-        Description :   This method creates folders for good and bad data in s3 bucket
-
-        Output      :   Good and bad folders are created in s3 bucket
-        On Failure  :   Write an exception log and then raise an exception
-
-        Version     :   1.2
-        Revisions   :   moved setup to cloud
-        """
-        method_name = self.create_dirs_for_good_bad_data.__name__
-
-        self.log_writer.start_log("start", self.class_name, method_name, log_file)
-
-        try:
-            self.s3.create_folder(
-                self.data_dir["train_good"], self.bucket["train_data"], log_file
-            )
-
-            self.s3.create_folder(
-                self.data_dir["train_bad"], self.bucket["train_data"], log_file
-            )
-
-            self.log_writer.log(
-                f"Created folders for good and bad data in {self.bucket['train_data']}",
-                log_file,
-            )
-
-            self.log_writer.start_log("exit", self.class_name, method_name, log_file)
-
-        except Exception as e:
-            self.log_writer.exception_log(e, self.class_name, method_name, log_file)
 
     def validate_raw_fname(
         self, regex, LengthOfDateStampInFile, LengthOfTimeStampInFile
@@ -190,11 +156,9 @@ class Raw_Train_Data_Validation:
         )
 
         try:
-            self.create_dirs_for_good_bad_data(self.train_log["name_validation"])
-
-            onlyfiles = self.s3.get_files_from_folder(
+            onlyfiles = self.blob.get_files_from_folder(
                 self.data_dir["raw_train_batch"],
-                self.bucket["raw_train_data"],
+                self.container["raw_train_data"],
                 self.train_log["name_validation"],
             )
 
@@ -230,37 +194,37 @@ class Raw_Train_Data_Validation:
 
                     if len(splitAtDot[1]) == LengthOfDateStampInFile:
                         if len(splitAtDot[2]) == LengthOfTimeStampInFile:
-                            self.s3.copy_data(
+                            self.blob.copy_data(
                                 raw_data_train_fname,
-                                self.bucket["raw_train_data"],
+                                self.container["raw_train_data"],
                                 good_data_train_fname,
-                                self.bucket["train_data"],
+                                self.container["train_data"],
                                 self.train_log["name_validation"],
                             )
 
                         else:
-                            self.s3.copy_data(
+                            self.blob.copy_data(
                                 raw_data_train_fname,
-                                self.bucket["raw_train_data"],
+                                self.container["raw_train_data"],
                                 bad_data_train_fname,
-                                self.bucket["train_data"],
+                                self.container["train_data"],
                                 self.train_log["name_validation"],
                             )
 
                     else:
-                        self.s3.copy_data(
+                        self.blob.copy_data(
                             raw_data_train_fname,
-                            self.bucket["raw_train_data"],
+                            self.container["raw_train_data"],
                             bad_data_train_fname,
-                            self.bucket["train_data"],
+                            self.container["train_data"],
                             self.train_log["name_validation"],
                         )
                 else:
-                    self.s3.copy_data(
+                    self.blob.copy_data(
                         raw_data_train_fname,
-                        self.bucket["raw_train_data"],
+                        self.container["raw_train_data"],
                         bad_data_train_fname,
-                        self.bucket["train_data"],
+                        self.container["train_data"],
                         self.train_log["name_validation"],
                     )
 
@@ -291,9 +255,9 @@ class Raw_Train_Data_Validation:
         )
 
         try:
-            lst = self.s3.read_csv_from_folder(
+            lst = self.blob.read_csv_from_folder(
                 self.data_dir["train_good"],
-                self.bucket["train_data"],
+                self.container["train_data"],
                 self.train_log["col_validation"],
             )
 
@@ -310,11 +274,11 @@ class Raw_Train_Data_Validation:
                 else:
                     dest_f = self.data_dir["train_bad"] + "/" + abs_f
 
-                    self.s3.move_data(
+                    self.blob.move_data(
                         file,
-                        self.bucket["train_data"],
+                        self.container["train_data"],
                         dest_f,
-                        self.bucket["train_data"],
+                        self.container["train_data"],
                         self.train_log["col_validation"],
                     )
 
@@ -348,9 +312,9 @@ class Raw_Train_Data_Validation:
         )
 
         try:
-            lst = self.s3.read_csv_from_folder(
+            lst = self.blob.read_csv_from_folder(
                 self.data_dir["train_good"],
-                self.bucket["train_data"],
+                self.container["train_data"],
                 self.train_log["missing_values_in_col"],
             )
 
@@ -369,11 +333,11 @@ class Raw_Train_Data_Validation:
 
                         dest_f = self.data_dir["train_bad"] + "/" + abs_f
 
-                        self.s3.move_data(
+                        self.blob.move_data(
                             file,
-                            self.bucket["train_data"],
+                            self.container["train_data"],
                             dest_f,
-                            self.bucket["train_data"],
+                            self.container["train_data"],
                             self.train_log["missing_values_in_col"],
                         )
 
@@ -382,11 +346,11 @@ class Raw_Train_Data_Validation:
                 if count == 0:
                     dest_f = self.data_dir["train_good"] + "/" + abs_f
 
-                    self.s3.upload_df_as_csv(
+                    self.blob.upload_df_as_csv(
                         df,
                         abs_f,
                         dest_f,
-                        self.bucket["train_data"],
+                        self.container["train_data"],
                         self.train_log["missing_values_in_col"],
                     )
 
