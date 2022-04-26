@@ -1,6 +1,6 @@
 from re import match, split
 
-from s3_operations import S3_Operation
+from blob_operations import Blob_Operation
 from utils.logger import App_Logger
 from utils.main_utils import Main_Utils
 from utils.read_params import read_params
@@ -24,9 +24,9 @@ class Raw_Train_Data_Validation:
 
         self.utils = Main_Utils()
 
-        self.s3 = S3_Operation()
+        self.blob = Blob_Operation()
 
-        self.bucket = self.config["s3_bucket"]
+        self.container = self.config["blob_container"]
 
         self.data_dir = self.config["data_dir"]
 
@@ -55,9 +55,9 @@ class Raw_Train_Data_Validation:
                 self.train_log["values_from_schema"],
             )
 
-            dic = self.s3.read_json(
+            dic = self.blob.read_json(
                 self.files["train_schema"],
-                self.bucket["io_files"],
+                self.container["io_files"],
                 self.train_log["values_from_schema"],
             )
 
@@ -120,6 +120,8 @@ class Raw_Train_Data_Validation:
             regex = self.s3.read_text(
                 self.files["regex"], self.bucket["io_files"], self.train_log["general"],
             )
+            
+            
 
             self.log_writer.log(f"Got {regex} pattern", self.train_log["general"])
 
