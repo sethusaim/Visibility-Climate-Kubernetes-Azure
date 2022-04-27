@@ -24,6 +24,8 @@ class Run:
         try:
             self.log_writer.log("Starting Data Transformation", self.pred_main_log)
 
+            self.data_transform.add_quotes_to_string()
+
             self.log_writer.log("Data Transformation completed !!", self.pred_main_log)
 
             self.log_writer.start_log(

@@ -1,9 +1,14 @@
 from os import environ, remove
+from re import M
 
 from azure.storage.blob import BlobServiceClient, ContainerClient
 
 from utils.logger import App_Logger
 from utils.read_params import read_params
+
+
+from io import StringIO
+from pandas import read_csv
 
 
 class Blob_Operation:
@@ -164,6 +169,146 @@ class Blob_Operation:
                     f"deleted option is set to {delete}, not removing the {local_fname} from local",
                     log_file,
                 )
+
+        except Exception as e:
+            self.log_writer.exception_log(e, self.class_name, method_name, log_file)
+
+    def get_object(self, file_name, container, log_file):
+        method_name = self.get_object.__name__
+
+        self.log_writer.start_log("start", self.class_name, method_name, log_file)
+
+        try:
+            client = self.get_container_client(container, log_file)
+
+            f = client.download_blob(blob=file_name)
+
+            self.log_writer.log(
+                f"Got {file_name} info from {container} container", log_file
+            )
+
+            self.log_writer.start_log("exit", self.class_name, method_name, log_file)
+
+            return f
+
+        except Exception as e:
+            self.log_writer.exception_log(e, self.class_name, method_name, log_file)
+
+    def read_object(self, object, log_file, decode=True, make_readable=False):
+        method_name = self.read_object.__name__
+
+        self.log_writer.start_log("start", self.class_name, method_name, log_file)
+
+        try:
+            func = (
+                lambda: object.readall().decode()
+                if decode is True
+                else object.readall()
+            )
+
+            self.log_writer.log(
+                f"Read {object} object with decode as {decode}", log_file
+            )
+
+            conv_func = lambda: StringIO(func()) if make_readable is True else func()
+
+            self.log_writer.start_log("exit", self.class_name, method_name, log_file)
+
+            return conv_func()
+
+        except Exception as e:
+            self.log_writer.exception_log(e, self.class_name, method_name, log_file)
+
+    def read_csv(self, fname, container, log_file):
+        method_name = self.read_csv.__name__
+
+        self.log_writer.start_log("start", self.class_name, method_name, log_file)
+
+        try:
+            csv_obj = self.get_object(fname, container, log_file)
+
+            content = self.read_object(csv_obj, log_file, make_readable=True)
+
+            df = read_csv(content)
+
+            self.log_writer.log(
+                f"Read {fname} csv file from {container} container", log_file
+            )
+
+            self.log_writer.start_log("exit", self.class_name, method_name, log_file)
+
+            return df
+
+        except Exception as e:
+            self.log_writer.exception_log(e, self.class_name, method_name, log_file)
+
+    def get_files_from_folder(self, folder_name, container, log_file):
+        method_name = self.get_files_from_folder.__name__
+
+        self.log_writer.start_log("start", self.class_name, method_name, log_file)
+
+        try:
+            client = self.get_container_client(container, log_file)
+
+            blob_list = client.list_blobs(name_starts_with=folder_name + "/")
+
+            f_name_lst = [f.name for f in blob_list]
+
+            self.log_writer.log(
+                f"Got files from {folder_name} folder from {container} container",
+                log_file,
+            )
+
+            self.log_writer.start_log("exit", self.class_name, method_name, log_file)
+
+            return f_name_lst
+
+        except Exception as e:
+            self.log_writer.exception_log(e, self.class_name, method_name, log_file)
+
+    def read_csv_from_folder(self, folder_name, container, log_file):
+        method_name = self.read_csv_from_folder.__name__
+
+        self.log_writer.start_log("start", self.class_name, method_name, log_file)
+
+        try:
+            files = self.get_files_from_folder(folder_name, container, log_file)
+
+            lst = [
+                (self.read_csv(f, container, log_file), f, f.split("/")[-1],)
+                for f in files
+                if f.endswith(".csv")
+            ]
+
+            self.log_writer.log(
+                f"Read csv files from {folder_name} folder from {container} container",
+                log_file,
+            )
+
+            self.log_writer.start_log("exit", self.class_name, method_name, log_file)
+
+            return lst
+
+        except Exception as e:
+            self.log_writer.exception_log(e, self.class_name, method_name, log_file)
+
+    def upload_df_as_csv(
+        self, dataframe, local_fname, container_fname, container, log_file
+    ):
+        method_name = self.upload_df_as_csv.__name__
+
+        self.log_writer.start_log("start", self.class_name, method_name, log_file)
+
+        try:
+            dataframe.to_csv(local_fname, index=None, header=True)
+
+            self.log_writer.log(
+                f"Created a local copy of dataframe with name {local_fname}", log_file
+            )
+
+            self.upload_file(local_fname, container_fname, container, log_file)
+
+            self.log_writer.start_log("exit", self.class_name, method_name, log_file)
 
         except Exception as e:
             self.log_writer.exception_log(e, self.class_name, method_name, log_file)
