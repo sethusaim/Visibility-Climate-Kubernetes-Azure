@@ -1,14 +1,12 @@
+from io import StringIO
 from os import environ, remove
 from re import M
 
 from azure.storage.blob import BlobServiceClient, ContainerClient
+from pandas import read_csv
 
 from utils.logger import App_Logger
 from utils.read_params import read_params
-
-
-from io import StringIO
-from pandas import read_csv
 
 
 class Blob_Operation:
