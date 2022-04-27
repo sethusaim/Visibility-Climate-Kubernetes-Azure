@@ -1,5 +1,4 @@
 from mongo_db_operations import MongoDB_Operation
-from s3_operations import S3_Operation
 from utils.logger import App_Logger
 from utils.read_params import read_params
 
@@ -17,7 +16,7 @@ class DB_Operation_Pred:
 
         self.class_name = self.__class__.__name__
 
-        self.bucket = self.config["s3_bucket"]
+        self.container = self.config["blob_container"]
 
         self.files = self.config["files"]
 
@@ -51,7 +50,7 @@ class DB_Operation_Pred:
         try:
             lst = self.s3.read_csv_from_folder(
                 self.data_dir["pred_good"],
-                self.bucket["pred_data"],
+                self.container["pred_data"],
                 self.pred_log["db_insert"],
             )
 
@@ -84,7 +83,7 @@ class DB_Operation_Pred:
         Method Name :   export_collection_to_csv
         Description :   This method inserts the good data in MongoDB as collection
 
-        Output      :   A csv file stored in input files bucket, containing good data which was stored in MongoDB
+        Output      :   A csv file stored in input files container, containing good data which was stored in MongoDB
         On Failure  :   Write an exception log and then raise an exception
 
         Version     :   1.2
@@ -107,7 +106,7 @@ class DB_Operation_Pred:
                 df,
                 self.files["pred_export"],
                 self.files["pred_export"],
-                self.bucket["feature_store"],
+                self.container["feature_store"],
                 self.pred_log["export_csv"],
             )
 

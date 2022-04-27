@@ -1,7 +1,7 @@
-s3_bucket:
-  pred_data: wafer-pred-data-2648352
-  logs: wafer-logs-4e1f3bd
-  feature_store: wafer-feature-store-02126f6
+blob_container:
+  pred_data: climate-pred-data-2648352
+  logs: climate-logs-4e1f3bd
+  feature_store: climate-feature-store-02126f6
   
 files:
   pred_export: pred_input_file.csv
@@ -18,5 +18,5 @@ log:
   upload: upload_log.txt
 
 mongodb:
-  db_name: wafer-data
-  collection_name: wafer-pred-data
+  db_name: climate-data
+  collection_name: climate-pred-data
