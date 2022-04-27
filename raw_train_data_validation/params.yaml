@@ -1,8 +1,8 @@
 blob_container:
-  io_files: wafer-io-files-03e0100
-  logs: wafer-logs-4e1f3bd
-  raw_train_data: wafer-raw-data-140436f
-  train_data: wafer-train-data-5acbd2d
+  io_files: climate-io-files-03e0100
+  logs: climate-logs-4e1f3bd
+  raw_train_data: climate-raw-data-140436f
+  train_data: climate-train-data-5acbd2d
 
 data_dir:
   raw_train_batch: train_batch
@@ -10,8 +10,8 @@ data_dir:
   train_bad: bad/train
 
 files:
-  train_schema: wafer-schema_training.json
-  regex: wafer-regex.txt
+  train_schema: climate-schema_training.json
+  regex: climate-regex.txt
 
 log_dir: logs
 
