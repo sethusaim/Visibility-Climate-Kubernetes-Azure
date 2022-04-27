@@ -12,8 +12,6 @@ class Run:
 
         self.pred_main_log = self.config["log"]["data_transform_main"]
 
-        self.col = self.config["col"]
-
         self.log_writer = App_Logger()
 
         self.data_transform = Data_Transform_Pred()
