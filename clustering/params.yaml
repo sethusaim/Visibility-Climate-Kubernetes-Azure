@@ -1,13 +1,13 @@
 blob_container:
-  io_files: wafer-io-files-03e0100
-  model: wafer-model-3e502a3
-  logs: wafer-logs-4e1f3bd
-  feature_store: wafer-feature-store-02126f6
-  component: wafer-kubeflow-components-4efdbdc
+  io_files: climate-io-files-03e0100
+  model: climate-model-3e502a3
+  logs: climate-logs-4e1f3bd
+  feature_store: climate-feature-store-02126f6
+  component: climate-kubeflow-components-4efdbdc
 
 files:
-  features: wafer_train_features.csv
-  targets: wafer_train_targets.csv
+  features: climate_train_features.csv
+  targets: climate_train_targets.csv
   elbow_plot: K-Means_Elbow_train.png
 
 log:
