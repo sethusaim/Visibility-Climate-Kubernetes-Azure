@@ -1,6 +1,6 @@
-s3_bucket:
-  pred_data: wafer-pred-data-2648352
-  logs: wafer-logs-4e1f3bd
+blob_container:
+  pred_data: climate-pred-data-2648352
+  logs: climate-logs-4e1f3bd
 
 log_dir: logs
 
@@ -15,6 +15,6 @@ log:
 col:
   output: Output
   good_bad: Good/Bad
-  wafer: Wafer
+  climate: climate
   unnamed: "Unnamed: 0"
 

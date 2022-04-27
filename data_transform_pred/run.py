@@ -24,13 +24,11 @@ class Run:
         try:
             self.log_writer.log("Starting Data Transformation", self.pred_main_log)
 
-            self.data_transform.rename_column(self.col["unnamed"], self.col["wafer"])
-
-            self.data_transform.rename_column(self.col["good_bad"], self.col["output"])
-
-            self.data_transform.replace_missing_with_null()
-
             self.log_writer.log("Data Transformation completed !!", self.pred_main_log)
+
+            self.log_writer.start_log(
+                "exit", self.class_name, method_name, self.pred_main_log
+            )
 
         except Exception as e:
             self.log_writer.exception_log(
