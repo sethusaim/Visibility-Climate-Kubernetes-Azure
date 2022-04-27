@@ -1,3 +1,4 @@
+from blob_operations import Blob_Operation
 from mongo_db_operations import MongoDB_Operation
 from utils.logger import App_Logger
 from utils.read_params import read_params
@@ -24,7 +25,7 @@ class DB_Operation_Pred:
 
         self.pred_log = self.config["log"]
 
-        self.s3 = S3_Operation()
+        self.blob = Blob_Operation()
 
         self.mongo = MongoDB_Operation()
 
@@ -48,7 +49,7 @@ class DB_Operation_Pred:
         )
 
         try:
-            lst = self.s3.read_csv_from_folder(
+            lst = self.blob.read_csv_from_folder(
                 self.data_dir["pred_good"],
                 self.container["pred_data"],
                 self.pred_log["db_insert"],
@@ -102,7 +103,7 @@ class DB_Operation_Pred:
                 self.pred_log["export_csv"],
             )
 
-            self.s3.upload_df_as_csv(
+            self.blob.upload_df_as_csv(
                 df,
                 self.files["pred_export"],
                 self.files["pred_export"],

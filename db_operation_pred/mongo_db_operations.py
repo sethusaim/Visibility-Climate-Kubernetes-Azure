@@ -82,7 +82,7 @@ class MongoDB_Operation:
             collection = database[collection_name]
 
             self.log_writer.log(
-                log_file, f"Created {collection_name} collection in mongodb",
+                f"Created {collection_name} collection in mongodb", log_file
             )
 
             self.log_writer.start_log(

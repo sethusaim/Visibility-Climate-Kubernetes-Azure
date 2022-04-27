@@ -39,7 +39,9 @@ class Main_Utils:
 
                 dest_f = self.log_dir + "/" + f
 
-                self.s3.upload_file(local_f, dest_f, self.container["logs"], self.log_file)
+                self.s3.upload_file(
+                    local_f, dest_f, self.container["logs"], self.log_file
+                )
 
             self.log_writer.log(
                 f"Uploaded logs to {self.container['logs']}", self.log_file
