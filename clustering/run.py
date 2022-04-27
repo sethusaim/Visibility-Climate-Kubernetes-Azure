@@ -1,3 +1,4 @@
+from blob_operations import Blob_Operation
 from clustering import KMeans_Clustering
 
 from utils.logger import App_Logger
@@ -20,6 +21,8 @@ class Run:
         self.log_writer = App_Logger()
 
         self.kmeans_op = KMeans_Clustering(self.clustering_log)
+
+        self.blob = Blob_Operation()
 
         self.class_name = self.__class__.__name__
 
