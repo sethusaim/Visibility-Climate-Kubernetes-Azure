@@ -14,7 +14,7 @@ class Run:
 
         self.train_main_log = self.config["log"]["raw_train_main"]
 
-        self.bucket = self.config["s3_bucket"]
+        self.container = self.config["blob_container"]
 
         self.raw_data = Raw_Train_Data_Validation()
 
