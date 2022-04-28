@@ -1,9 +1,6 @@
 from os import listdir
 from os.path import join
 from shutil import rmtree
-from tkinter import E
-
-
 
 from utils.logger import App_Logger
 from utils.read_params import read_params

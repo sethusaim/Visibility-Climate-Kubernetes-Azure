@@ -3,7 +3,7 @@ from os import environ
 from mlflow import log_metric, log_param, set_experiment, set_tracking_uri
 from mlflow.sklearn import log_model
 
-
+from blob_operations import Blob_Operation
 from utils.logger import App_Logger
 from utils.read_params import read_params
 
@@ -25,7 +25,7 @@ class MLFlow_Operation:
 
         self.server_uri = environ["MLFLOW_TRACKING_URI"]
 
-        self.s3 = S3_Operation()
+        self.blob = Blob_Operation()
 
         self.log_file = log_file
 
