@@ -43,7 +43,9 @@ class Main_Utils:
 
                 dest_f = self.log_dir + "/" + f
 
-                self.blob.upload_file(local_f, dest_f, self.container["logs"], self.log_file)
+                self.blob.upload_file(
+                    local_f, dest_f, self.container["logs"], self.log_file
+                )
 
             self.log_writer.log(
                 f"Uploaded logs to {self.container['logs']}", self.log_file

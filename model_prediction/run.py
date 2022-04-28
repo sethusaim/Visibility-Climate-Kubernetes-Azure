@@ -1,4 +1,5 @@
 from pandas import DataFrame
+from blob_operations import Blob_Operation
 
 from utils.logger import App_Logger
 from utils.main_utils import Main_Utils
@@ -24,8 +25,8 @@ class Run:
         self.log_writer = App_Logger()
 
         self.utils = Main_Utils()
-        
-        self.blob = " "
+
+        self.blob = Blob_Operation()
 
     def predict_from_model(self):
         """
@@ -92,7 +93,7 @@ class Run:
                     self.container["io_files"],
                     self.pred_log,
                 )
-
+                
             self.log_writer.log(
                 f"Prediction file is created with {self.files['pred_output']} in {self.container['io_files']}",
                 self.pred_log,
