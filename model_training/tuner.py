@@ -3,7 +3,7 @@ from sklearn.model_selection import train_test_split
 from xgboost import XGBClassifier
 
 from mlflow_operations import MLFlow_Operation
-from s3_operations import S3_Operation
+
 from utils.logger import App_Logger
 from utils.model_utils import Model_Utils
 from utils.read_params import read_params

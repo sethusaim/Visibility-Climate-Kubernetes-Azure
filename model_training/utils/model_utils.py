@@ -1,5 +1,5 @@
 from numpy import unique
-from s3_operations import S3_Operation
+
 from sklearn.metrics import accuracy_score, roc_auc_score
 from sklearn.model_selection import GridSearchCV
 

@@ -3,7 +3,7 @@ from os.path import join
 from shutil import rmtree
 from tkinter import E
 
-from s3_operations import S3_Operation
+
 
 from utils.logger import App_Logger
 from utils.read_params import read_params

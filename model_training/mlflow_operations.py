@@ -3,7 +3,7 @@ from os import environ
 from mlflow import log_metric, log_param, set_experiment, set_tracking_uri
 from mlflow.sklearn import log_model
 
-from s3_operations import S3_Operation
+
 from utils.logger import App_Logger
 from utils.read_params import read_params
 
