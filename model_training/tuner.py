@@ -1,8 +1,8 @@
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 from xgboost import XGBClassifier
-from blob_operations import Blob_Operation
 
+from blob_operations import Blob_Operation
 from mlflow_operations import MLFlow_Operation
 from utils.logger import App_Logger
 from utils.model_utils import Model_Utils

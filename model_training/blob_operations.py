@@ -1,7 +1,6 @@
-from curses.ascii import ETB
 from io import StringIO
 from os import environ, remove
-from pickle import loads, dump
+from pickle import dump, loads
 
 from azure.storage.blob import BlobServiceClient, ContainerClient
 
