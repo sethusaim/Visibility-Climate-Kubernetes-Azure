@@ -29,7 +29,7 @@ class Model_Finder:
 
         self.model_dir = self.config["models_dir"]
 
-        self.bucket = self.config["s3_bucket"]
+        self.container = self.config["blob_container"]
 
         self.mlflow_config = self.config["mlflow_config"]
 
@@ -41,7 +41,7 @@ class Model_Finder:
 
         self.log_writer = App_Logger()
 
-        self.s3 = S3_Operation()
+        self.blob = blob_Operation()
 
         self.rf_model = RandomForestClassifier()
 
@@ -249,10 +249,10 @@ class Model_Finder:
 
                 model_score = tm[1]
 
-                self.s3.save_model(
+                self.blob.save_model(
                     model,
                     self.model_dir["train"],
-                    self.bucket["model"],
+                    self.container["model"],
                     log_file,
                     format=self.save_format,
                     idx=idx,

@@ -16,7 +16,7 @@ class Run:
 
         self.train_log = self.config["log"]
 
-        self.bucket = self.config["s3_bucket"]
+        self.container = self.config["blob_container"]
 
         self.model_dir = self.config["models_dir"]
 
@@ -28,7 +28,7 @@ class Run:
 
         self.utils = Main_Utils()
 
-        self.s3 = S3_Operation()
+        self.blob = blob_Operation()
 
         self.log_writer = App_Logger()
 
@@ -42,9 +42,9 @@ class Run:
         )
 
         try:
-            feat_fnames = self.s3.get_files_from_folder(
+            feat_fnames = self.blob.get_files_from_folder(
                 self.config["file_pattern"],
-                self.bucket["feature_store"],
+                self.container["feature_store"],
                 self.train_log["model_train"],
             )
 
@@ -55,9 +55,9 @@ class Run:
                 self.train_log["model_train"],
             )
 
-            kmeans_model = self.s3.load_model(
+            kmeans_model = self.blob.load_model(
                 "KMeans",
-                self.bucket["model"],
+                self.container["model"],
                 self.train_log["model_train"],
                 self.save_format,
                 model_dir=self.model_dir["train"],
@@ -90,18 +90,18 @@ class Run:
 
                 cluster_feat = self.utils.get_features_csv_as_numpy_array(
                     feat_name,
-                    self.bucket["feature_store"],
+                    self.container["feature_store"],
                     self.train_log["model_train"],
                 )
 
                 cluster_label = self.utils.get_targets_csv_as_numpy_array(
                     label_name,
-                    self.bucket["feature_store"],
+                    self.container["feature_store"],
                     self.train_log["model_train"],
                 )
 
                 self.log_writer.log(
-                    f"Got cluster features and cluster labels dataframe from {self.bucket['feature_store']} bucket",
+                    f"Got cluster features and cluster labels dataframe from {self.container['feature_store']} container",
                     self.train_log["model_train"],
                 )
 

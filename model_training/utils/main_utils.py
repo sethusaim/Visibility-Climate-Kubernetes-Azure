@@ -4,6 +4,7 @@ from shutil import rmtree
 
 from utils.logger import App_Logger
 from utils.read_params import read_params
+from blob_operations import Blob_Operation
 
 
 class Main_Utils:
@@ -12,13 +13,13 @@ class Main_Utils:
 
         self.config = read_params()
 
-        self.bucket = self.config["s3_bucket"]
+        self.container = self.config["blob_container"]
 
         self.log_file = self.config["log"]["upload"]
 
         self.log_dir = self.config["log_dir"]
-
-        self.s3 = S3_Operation()
+        
+        self.blob = Blob_Operation()
 
         self.log_writer = App_Logger()
 
@@ -39,10 +40,10 @@ class Main_Utils:
 
                 dest_f = self.log_dir + "/" + f
 
-                self.s3.upload_file(local_f, dest_f, self.bucket["logs"], self.log_file)
+                self.blob.upload_file(local_f, dest_f, self.container["logs"], self.log_file)
 
             self.log_writer.log(
-                f"Uploaded logs to {self.bucket['logs']}", self.log_file
+                f"Uploaded logs to {self.container['logs']}", self.log_file
             )
 
             self.log_writer.start_log(
@@ -73,16 +74,16 @@ class Main_Utils:
         except Exception as e:
             self.log_writer.exception_log(e, self.class_name, method_name, log_file)
 
-    def get_targets_csv_as_numpy_array(self, fname, bucket, log_file):
+    def get_targets_csv_as_numpy_array(self, fname, container, log_file):
         method_name = self.get_targets_csv_as_numpy_array.__name__
 
         self.log_writer.start_log("start", self.class_name, method_name, log_file)
 
         try:
-            df = self.s3.read_csv(fname, bucket, log_file)
+            df = self.blob.read_csv(fname, container, log_file)
 
             self.log_writer.log(
-                "Got dataframe from {bucket} with file as {fname}", log_file
+                "Got dataframe from {container} with file as {fname}", log_file
             )
 
             targets = df["Labels"]
@@ -100,16 +101,16 @@ class Main_Utils:
         except Exception as e:
             self.log_writer.exception_log(e, self.class_name, method_name, log_file)
 
-    def get_features_csv_as_numpy_array(self, fname, bucket, log_file):
+    def get_features_csv_as_numpy_array(self, fname, container, log_file):
         method_name = self.get_features_csv_as_numpy_array.__name__
 
         self.log_writer.start_log("start", self.class_name, method_name, log_file)
 
         try:
-            df = self.s3.read_csv(fname, bucket, log_file)
+            df = self.blob.read_csv(fname, container, log_file)
 
             self.log_writer.log(
-                f"Got the dataframe from {bucket} with file name as {fname}", log_file
+                f"Got the dataframe from {container} with file name as {fname}", log_file
             )
 
             np_array = df.to_numpy()
