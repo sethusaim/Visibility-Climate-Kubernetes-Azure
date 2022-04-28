@@ -2,7 +2,7 @@ from os import listdir
 from os.path import join
 from shutil import rmtree
 
-from blob_operations import blob_Operation
+from blob_operations import Blob_Operation
 
 from utils.logger import App_Logger
 from utils.read_params import read_params
@@ -10,7 +10,7 @@ from utils.read_params import read_params
 
 class Main_Utils:
     def __init__(self):
-        self.blob = blob_Operation()
+        self.blob = Blob_Operation()
 
         self.log_writer = App_Logger()
 

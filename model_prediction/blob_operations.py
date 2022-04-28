@@ -292,3 +292,27 @@ class Blob_Operation:
 
         except Exception as e:
             self.log_writer.exception_log(e, self.class_name, method_name, log_file)
+
+    def get_files_from_folder(self, folder_name, container, log_file):
+        method_name = self.get_files_from_folder.__name__
+
+        self.log_writer.start_log("start", self.class_name, method_name, log_file)
+
+        try:
+            client = self.get_container_client(container, log_file)
+
+            blob_list = client.list_blobs(name_starts_with=folder_name + "/")
+
+            f_name_lst = [f.name for f in blob_list]
+
+            self.log_writer.log(
+                f"Got files from {folder_name} folder from {container} container",
+                log_file,
+            )
+
+            self.log_writer.start_log("exit", self.class_name, method_name, log_file)
+
+            return f_name_lst
+
+        except Exception as e:
+            self.log_writer.exception_log(e, self.class_name, method_name, log_file)

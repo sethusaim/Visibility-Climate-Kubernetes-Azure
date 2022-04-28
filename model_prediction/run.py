@@ -1,6 +1,6 @@
 from pandas import DataFrame
-from blob_operations import Blob_Operation
 
+from blob_operations import Blob_Operation
 from utils.logger import App_Logger
 from utils.main_utils import Main_Utils
 from utils.read_params import read_params
@@ -93,7 +93,7 @@ class Run:
                     self.container["io_files"],
                     self.pred_log,
                 )
-                
+
             self.log_writer.log(
                 f"Prediction file is created with {self.files['pred_output']} in {self.container['io_files']}",
                 self.pred_log,
