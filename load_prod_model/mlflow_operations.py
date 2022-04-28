@@ -2,8 +2,9 @@ from os import environ
 
 from mlflow import get_experiment_by_name, search_runs, set_tracking_uri
 from mlflow.tracking import MlflowClient
+from blob_operations import Blob_Operation
 
-from s3_operations import S3_Operation
+
 from utils.logger import App_Logger
 from utils.main_utils import Main_Utils
 from utils.read_params import read_params
@@ -24,7 +25,7 @@ class MLFlow_Operation:
 
         self.log_writer = App_Logger()
 
-        self.s3 = S3_Operation()
+        self.blob = Blob_Operation()
 
         self.utils = Main_Utils()
 
@@ -197,7 +198,7 @@ class MLFlow_Operation:
             )
 
     def transition_mlflow_model(
-        self, model_version, stage, model_name, from_bucket, to_bucket,
+        self, model_version, stage, model_name, from_container, to_container,
     ):
         """
         Method Name :   transition_mlflow_model
@@ -248,11 +249,11 @@ class MLFlow_Operation:
                     f"Transitioned {model_name} to {stage} in mlflow", self.log_file
                 )
 
-                self.s3.copy_data(
+                self.blob.copy_data(
                     train_model_file,
-                    from_bucket,
+                    from_container,
                     prod_model_file,
-                    to_bucket,
+                    to_container,
                     self.log_file,
                 )
 
@@ -269,11 +270,11 @@ class MLFlow_Operation:
                     f"Transitioned {model_name} to {stage} in mlflow", self.log_file
                 )
 
-                self.s3.copy_data(
+                self.blob.copy_data(
                     train_model_file,
-                    from_bucket,
+                    from_container,
                     stag_model_file,
-                    to_bucket,
+                    to_container,
                     self.log_file,
                 )
 

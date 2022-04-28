@@ -1,5 +1,6 @@
+from blob_operations import Blob_Operation
 from mlflow_operations import MLFlow_Operation
-from s3_operations import S3_Operation
+
 from utils.logger import App_Logger
 from utils.main_utils import Main_Utils
 from utils.read_params import read_params
@@ -26,7 +27,7 @@ class Load_Prod_Model:
 
         self.mlflow_config = self.config["mlflow_config"]
 
-        self.s3 = S3_Operation()
+        self.blob = Blob_Operation()
 
         self.log_writer = App_Logger()
 
@@ -64,7 +65,7 @@ class Load_Prod_Model:
 
             runs = self.mlflow_op.get_runs_from_mlflow(exp.experiment_id)
 
-            feat_fnames = self.s3.get_files_from_folder(
+            feat_fnames = self.blob.get_files_from_folder(
                 self.config["feature_pattern"],
                 self.container["feature_store"],
                 self.load_prod_model_log,
