@@ -2,9 +2,10 @@ from os import listdir
 from os.path import join
 from shutil import rmtree
 
+from blob_operations import Blob_Operation
+
 from utils.logger import App_Logger
 from utils.read_params import read_params
-from blob_operations import Blob_Operation
 
 
 class Main_Utils:
@@ -18,7 +19,7 @@ class Main_Utils:
         self.log_file = self.config["log"]["upload"]
 
         self.log_dir = self.config["log_dir"]
-        
+
         self.blob = Blob_Operation()
 
         self.log_writer = App_Logger()
@@ -40,7 +41,9 @@ class Main_Utils:
 
                 dest_f = self.log_dir + "/" + f
 
-                self.blob.upload_file(local_f, dest_f, self.container["logs"], self.log_file)
+                self.blob.upload_file(
+                    local_f, dest_f, self.container["logs"], self.log_file
+                )
 
             self.log_writer.log(
                 f"Uploaded logs to {self.container['logs']}", self.log_file
@@ -63,7 +66,7 @@ class Main_Utils:
         self.log_writer.start_log("start", self.class_name, method_name, log_file)
 
         try:
-            cluster_fname = "wafer_" + key + f"-{idx}.csv"
+            cluster_fname = "climate_" + key + f"-{idx}.csv"
 
             self.log_writer.log(f"Got the cluster file name for {key}", log_file)
 
@@ -110,7 +113,8 @@ class Main_Utils:
             df = self.blob.read_csv(fname, container, log_file)
 
             self.log_writer.log(
-                f"Got the dataframe from {container} with file name as {fname}", log_file
+                f"Got the dataframe from {container} with file name as {fname}",
+                log_file,
             )
 
             np_array = df.to_numpy()

@@ -1,9 +1,9 @@
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 from xgboost import XGBClassifier
+from blob_operations import Blob_Operation
 
 from mlflow_operations import MLFlow_Operation
-
 from utils.logger import App_Logger
 from utils.model_utils import Model_Utils
 from utils.read_params import read_params
@@ -41,7 +41,7 @@ class Model_Finder:
 
         self.log_writer = App_Logger()
 
-        self.blob = blob_Operation()
+        self.blob = Blob_Operation()
 
         self.rf_model = RandomForestClassifier()
 
@@ -253,8 +253,8 @@ class Model_Finder:
                     model,
                     self.model_dir["train"],
                     self.container["model"],
+                    self.save_format,
                     log_file,
-                    format=self.save_format,
                     idx=idx,
                 )
 

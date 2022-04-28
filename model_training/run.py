@@ -1,4 +1,5 @@
 from mlflow import end_run, start_run
+from blob_operations import Blob_Operation
 
 from mlflow_operations import MLFlow_Operation
 
@@ -28,7 +29,7 @@ class Run:
 
         self.utils = Main_Utils()
 
-        self.blob = blob_Operation()
+        self.blob = Blob_Operation()
 
         self.log_writer = App_Logger()
 

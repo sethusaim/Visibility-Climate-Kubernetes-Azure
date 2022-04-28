@@ -1,7 +1,6 @@
 from numpy import unique
 from sklearn.metrics import accuracy_score, roc_auc_score
 from sklearn.model_selection import GridSearchCV
-from blob_operations import Blob_Operation
 
 from utils.logger import App_Logger
 from utils.read_params import read_params
@@ -23,8 +22,6 @@ class Model_Utils:
         self.tuner_kwargs = self.config["model_utils"]
 
         self.container = self.config["blob_container"]
-        
-        self.blob = Blob_Operation()
 
         self.log_writer = App_Logger()
 

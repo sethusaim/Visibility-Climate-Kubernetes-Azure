@@ -5,13 +5,13 @@ base:
 target_col: Output
 
 blob_container:
-  io_files: wafer-io-files-03e0100
-  model: wafer-model-3e502a3
-  feature_store: wafer-feature-store-02126f6
-  logs: wafer-logs-4e1f3bd
+  io_files: climate-io-files-03e0100
+  model: climate-model-3e502a3
+  feature_store: climate-feature-store-02126f6
+  logs: climate-logs-4e1f3bd
 
 mlflow_config:
-  exp_name: wafer-ops-test-4
+  exp_name: climate-ops-test-4
   run_name: mlops
   serialization_format: cloudpickle
 
@@ -19,7 +19,7 @@ models_dir:
   train: trained
 
 file_pattern:
-  wafer_features-
+  climate_features-
 
 log:
   model_train: model_training_log.txt
