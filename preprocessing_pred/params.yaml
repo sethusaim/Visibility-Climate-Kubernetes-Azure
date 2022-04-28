@@ -23,3 +23,6 @@ knn_imputer:
   weights: uniform
 
 log_dir: logs
+
+pca_model:
+  n_components: 100

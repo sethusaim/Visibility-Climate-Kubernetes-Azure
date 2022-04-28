@@ -1,3 +1,4 @@
+from blob_operations import Blob_Operation
 from data_loader_pred import Data_Getter_Pred
 from preprocessing import Preprocessor
 
@@ -26,7 +27,7 @@ class Run:
 
         self.log_writer = App_Logger()
 
-        self.blob = S3_Operation()
+        self.blob = Blob_Operation()
 
     def run_preprocess(self):
         method_name = self.run_preprocess.__name__

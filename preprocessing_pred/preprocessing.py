@@ -23,15 +23,11 @@ class Preprocessor:
 
         self.log_file = log_file
 
-        self.null_values_file = self.config["null_values_csv_file"]
+        self.files = self.config["files"]
 
-        self.n_components = self.config["pca_model"]["n_components"]
+        self.imputer_params = self.config["knn_imputer"]
 
-        self.knn_n_neighbors = self.config["n_neighbors"]
-
-        self.knn_weights = (self.config["weights"],)
-
-        self.input_files_bucket = self.config["blob_container"]["input_files"]
+        self.container = self.config["blob_container"]
 
         self.blob = Blob_Operation()
 
@@ -55,14 +51,14 @@ class Preprocessor:
             "start", self.class_name, method_name, self.log_file,
         )
 
-        self.data = data
-
-        self.columns = columns
-
         try:
+            self.data = data
+
+            self.columns = columns
+
             self.useful_data = self.data.drop(labels=self.columns, axis=1)
 
-            self.log_writer.log(self.log_file, "Column removal Successful")
+            self.log_writer.log("Column removal Successful", self.log_file)
 
             self.log_writer.start_log(
                 "exit", self.class_name, method_name, self.log_file,
@@ -71,7 +67,7 @@ class Preprocessor:
             return self.useful_data
 
         except Exception as e:
-            self.log_writer.log(self.log_file, "Column removal Unsuccessful")
+            self.log_writer.log("Column removal Unsuccessful", self.log_file)
 
             self.log_writer.exception_log(
                 e, self.class_name, method_name, self.log_file,
@@ -100,9 +96,7 @@ class Preprocessor:
 
             self.Y = data[label_column_name]
 
-            self.log_writer.log(
-                self.log_file, "Label Separation Successful",
-            )
+            self.log_writer.log("Label Separation Successful", self.log_file)
 
             self.log_writer.start_log(
                 "exit", self.class_name, method_name, self.log_file,
@@ -111,9 +105,7 @@ class Preprocessor:
             return self.X, self.Y
 
         except Exception as e:
-            self.log_writer.log(
-                self.log_file, "Label Separation Unsuccessful",
-            )
+            self.log_writer.log("Label Separation Unsuccessful", self.log_file)
 
             self.log_writer.exception_log(
                 e, self.class_name, method_name, self.log_file,
@@ -140,7 +132,7 @@ class Preprocessor:
         try:
             data = data.drop(cols, axis=1)
 
-            self.log_writer.log(self.log_file, "Dropped unnecessary columns")
+            self.log_writer.log("Dropped unnecessary columns", self.log_file)
 
             self.log_writer.start_log(
                 "exit", self.class_name, method_name, self.log_file,
@@ -210,13 +202,14 @@ class Preprocessor:
             "start", self.class_name, method_name, self.log_file,
         )
 
-        self.null_present = False
-
-        self.cols_with_missing_values = []
-
-        self.cols = data.columns
-
         try:
+
+            self.null_present = False
+
+            self.cols_with_missing_values = []
+
+            self.cols = data.columns
+
             self.null_counts = data.isna().sum()
 
             for i in range(len(self.null_counts)):
@@ -232,13 +225,14 @@ class Preprocessor:
 
                 self.null_df["missing values count"] = asarray(data.isna().sum())
 
-            self.log_writer.log(self.log_file, "Created data frame with null values")
+            self.log_writer.log("Created data frame with null values", self.log_file)
 
             self.blob.upload_df_as_csv(
                 self.null_df,
-                self.null_values_file,
-                self.input_files_bucket,
-                self.null_values_file,
+                self.files["null_values"],
+                self.files["null_values"],
+                self.container["io_files"],
+                self.log_file,
             )
 
             self.log_writer.start_log(
@@ -248,7 +242,7 @@ class Preprocessor:
             return self.null_present
 
         except Exception as e:
-            self.log_writer.log(self.log_file, "Finding missing values failed")
+            self.log_writer.log("Finding missing values failed", self.log_file)
 
             self.log_writer.exception_log(
                 e, self.class_name, method_name, self.log_file
@@ -278,7 +272,7 @@ class Preprocessor:
             for column in data.drop(["class"], axis=1).columns:
                 data = get_dummies(data, columns=[column])
 
-            self.log_writer.log(self.log_file, "Encoded target columns")
+            self.log_writer.log("Encoded target columns", self.log_file)
 
             self.log_writer.start_log(
                 "exit", self.class_name, method_name, self.log_file,
@@ -315,7 +309,7 @@ class Preprocessor:
             X_scaled = scalar.fit_transform(X)
 
             self.log_writer.log(
-                self.log_file, f"Transformed data using {scalar.__class__.__name__}",
+                f"Transformed data using {scalar.__class__.__name__}", self.log_file
             )
 
             self.log_writer.start_log(
@@ -347,34 +341,28 @@ class Preprocessor:
             "start", self.class_name, method_name, self.log_file,
         )
 
-        self.data = data
-
         try:
-            imputer = KNNImputer(
-                n_neighbors=self.knn_n_neighbors,
-                weights=self.knn_weights,
-                missing_values=np_nan,
-            )
+            self.data = data
+
+            imputer = KNNImputer(missing_values=np_nan, **self.imputer_params)
 
             self.log_writer.log(
-                self.log_file, f"Initialized {imputer.__class__.__name__}",
+                f"Initialized {imputer.__class__.__name__}", self.log_file
             )
 
             self.new_array = imputer.fit_transform(self.data)
 
             self.log_writer.log(
-                self.log_file, "Imputed missing values using KNN imputer",
+                "Imputed missing values using KNN imputer", self.log_file
             )
 
             self.new_data = DataFrame(data=(self.new_array), columns=self.data.columns)
 
             self.log_writer.log(
-                self.log_file, "Created new dataframe with imputed values",
+                "Created new dataframe with imputed values", self.log_file
             )
 
-            self.log_writer.log(
-                self.log_file, "Imputing missing values Successful",
-            )
+            self.log_writer.log("Imputing missing values Successful", self.log_file)
 
             self.log_writer.start_log(
                 "exit", self.class_name, method_name, self.log_file,
@@ -405,20 +393,15 @@ class Preprocessor:
             "start", self.class_name, method_name, self.log_file,
         )
 
-        self.columns = data.columns
-
-        self.data_n = data.describe()
-
-        self.col_drop = []
-
         try:
-            for x in self.columns:
-                if self.data_n[x]["std"] == 0:
-                    self.col_drop.append(x)
+            self.columns = data.columns
+
+            self.data_n = data.describe()
+
+            self.col_drop = [x for x in self.columns if self.data_n[x]["std"] == 0]
 
             self.log_writer.log(
-                self.log_file,
-                "Column search for Standard Deviation of Zero Successful",
+                "Column search for Standard Deviation of Zero Successful", self.log_file
             )
 
             self.log_writer.start_log(
@@ -429,7 +412,7 @@ class Preprocessor:
 
         except Exception as e:
             self.log_writer.log(
-                self.log_file, "Column search for Standard Deviation of Zero Failed",
+                "Column search for Standard Deviation of Zero Failed", self.log_file
             )
 
             self.log_writer.exception_log(
