@@ -2,21 +2,21 @@ from os import listdir
 from os.path import join
 from shutil import rmtree
 
+from blob_operations import Blob_Operation
+
 from utils.logger import App_Logger
 from utils.read_params import read_params
 
 
 class Main_Utils:
     def __init__(self):
-        self.s3 = S3_Operation()
-        
-        self.blob = ""
+        self.blob = Blob_Operation()
 
         self.log_writer = App_Logger()
 
         self.config = read_params()
 
-        self.bucket = self.config["blob_container"]
+        self.container = self.config["blob_container"]
 
         self.log_file = self.config["log"]["upload"]
 
@@ -41,10 +41,12 @@ class Main_Utils:
 
                 dest_f = self.log_dir + "/" + f
 
-                self.s3.upload_file(local_f, dest_f, self.bucket["logs"], self.log_file)
+                self.blob.upload_file(
+                    local_f, dest_f, self.container["logs"], self.log_file
+                )
 
             self.log_writer.log(
-                f"Uploaded logs to {self.bucket['logs']}", self.log_file
+                f"Uploaded logs to {self.container['logs']}", self.log_file
             )
 
             self.log_writer.start_log(

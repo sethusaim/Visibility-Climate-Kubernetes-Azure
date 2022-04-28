@@ -1,5 +1,5 @@
+from blob_operations import Blob_Operation
 from mongo_db_operations import MongoDB_Operation
-
 from utils.logger import App_Logger
 from utils.read_params import read_params
 
@@ -17,7 +17,7 @@ class DB_Operation_Train:
 
         self.class_name = self.__class__.__name__
 
-        self.bucket = self.config["blob_container"]
+        self.container = self.config["blob_container"]
 
         self.files = self.config["files"]
 
@@ -25,7 +25,7 @@ class DB_Operation_Train:
 
         self.train_log = self.config["log"]
 
-        self.s3 = S3_Operation()
+        self.blob = Blob_Operation()
 
         self.mongo = MongoDB_Operation()
 
@@ -49,9 +49,9 @@ class DB_Operation_Train:
         )
 
         try:
-            lst = self.s3.read_csv_from_folder(
+            lst = self.blob.read_csv_from_folder(
                 self.data_dir["train_good"],
-                self.bucket["train_data"],
+                self.container["train_data"],
                 self.train_log["db_insert"],
             )
 
@@ -84,7 +84,7 @@ class DB_Operation_Train:
         Method Name :   export_collection_to_csv
         Description :   This method inserts the good data in MongoDB as collection
 
-        Output      :   A csv file stored in input files bucket, containing good data which was stored in MongoDB
+        Output      :   A csv file stored in input files container, containing good data which was stored in MongoDB
         On Failure  :   Write an exception log and then raise an exception
 
         Version     :   1.2
@@ -103,11 +103,11 @@ class DB_Operation_Train:
                 self.train_log["export_csv"],
             )
 
-            self.s3.upload_df_as_csv(
+            self.blob.upload_df_as_csv(
                 df,
                 self.files["train_export"],
                 self.files["train_export"],
-                self.bucket["feature_store"],
+                self.container["feature_store"],
                 self.train_log["export_csv"],
             )
 

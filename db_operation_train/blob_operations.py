@@ -1,6 +1,5 @@
 from io import StringIO
 from os import environ, remove
-from re import M
 
 from azure.storage.blob import BlobServiceClient, ContainerClient
 from pandas import read_csv
