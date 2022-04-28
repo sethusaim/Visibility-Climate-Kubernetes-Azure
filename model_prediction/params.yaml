@@ -1,0 +1,20 @@
+log:
+  pred: prediction_log.txt
+  upload: upload_log.txt
+
+model_dir:
+  prod: production
+
+save_format: ".sav"
+
+log_dir: logs
+
+files:
+  pred_input_file_preprocess: pred_input_file_preprocess.csv
+  pred_output: predictions.csv
+
+blob_container:
+  feature_store: climate-feature-store-02126f6
+  logs: climate-logs-4e1f3bd
+  model: climate-model-3e502a3
+  io_files: climate-io-files-03e0100
