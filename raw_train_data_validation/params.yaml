@@ -1,8 +1,8 @@
 blob_container:
-  io_files: climate-io-files-03e0100
-  logs: climate-logs-4e1f3bd
-  raw_train_data: climate-raw-data-140436f
-  train_data: climate-train-data-5acbd2d
+  io_files: climate-io-files
+  logs: climate-logs
+  raw_train_data: climate-raw-data
+  train_data: climate-train-data
 
 data_dir:
   raw_train_batch: train_batch
