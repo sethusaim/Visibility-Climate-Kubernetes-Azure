@@ -25,7 +25,7 @@ class Blob_Operation:
 
         try:
             container_client = ContainerClient.from_connection_string(
-                conn_str=self.connection_string, container=container
+                conn_str=self.connection_string, container_name=container
             )
 
             self.log_writer.log("Got container client from connection string", log_file)
@@ -130,9 +130,7 @@ class Blob_Operation:
                 )
 
                 if f is True:
-                    self.delete_file(
-                        fname=container_fname, container=container,
-                    )
+                    self.delete_file(container_fname, container, log_file)
 
                 else:
                     self.log_writer.log(

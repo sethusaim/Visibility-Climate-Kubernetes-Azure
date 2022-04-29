@@ -42,17 +42,17 @@ class Data_Transform_Train:
 
         try:
             lst = self.blob.read_csv_from_folder(
-                self.data_dir["good"],
+                self.data_dir["train_good"],
                 self.container["train_data"],
                 self.train_data_transform_log,
             )
 
-            for idx, f in enumerate(lst):
-                df = f[idx][0]
+            for _, f in enumerate(lst):
+                df = f[0]
 
-                file = f[idx][1]
+                file = f[1]
 
-                abs_f = f[idx][2]
+                abs_f = f[2]
 
                 df["DATE"] = df["DATE"].apply(lambda x: "'" + str(x) + "'")
 
@@ -67,10 +67,6 @@ class Data_Transform_Train:
                     self.container["train_data"],
                     self.train_data_transform_log,
                 )
-
-            self.log_writer.start_log(
-                key="exit", class_name=self.class_name, method_name=method_name,
-            )
 
             self.log_writer.start_log(
                 "exit", self.class_name, method_name, self.train_data_transform_log

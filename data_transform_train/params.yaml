@@ -1,6 +1,6 @@
 blob_container:
-  train_data: climate-train-data-2648352
-  logs: climate-logs-4e1f3bd
+  train_data: climate-train-data
+  logs: climate-logs
 
 log_dir: logs
 
