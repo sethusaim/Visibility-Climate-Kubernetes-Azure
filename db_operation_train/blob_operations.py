@@ -25,7 +25,7 @@ class Blob_Operation:
 
         try:
             container_client = ContainerClient.from_connection_string(
-                conn_str=self.connection_string, container=container
+                conn_str=self.connection_string, container_name=container
             )
 
             self.log_writer.log("Got container client from connection string", log_file)
@@ -245,22 +245,22 @@ class Blob_Operation:
                 f = self.load_file(container_fname, container, log_file)
 
                 self.log_writer.log(
-                    f"{container_fname} file exists is {f}, and replace option is set to {replace}..Deleting the file",
+                    f"{container_fname} file exists is {f}, and replace option is set to {replace}..Deleting the file",log_file
                 )
 
                 if f is True:
                     self.delete_file(
-                        container_fname, container,
+                        container_fname, container,log_file
                     )
 
                 else:
-                    self.log_writer.log(f"{container_fname} file exists is {f}",)
+                    self.log_writer.log(f"{container_fname} file exists is {f}",log_file)
 
                 with open(file=local_fname, mode="rb") as f:
                     client.upload_blob(data=f, name=container_fname)
 
                 self.log_writer.log(
-                    f"Uploaded {local_fname} to {container} container with name as {container_fname} file",
+                    f"Uploaded {local_fname} to {container} container with name as {container_fname} file",log_file
                 )
 
             else:
