@@ -1,6 +1,5 @@
 from blob_operations import Blob_Operation
 from clustering import KMeans_Clustering
-
 from utils.logger import App_Logger
 from utils.main_utils import Main_Utils
 from utils.read_params import read_params

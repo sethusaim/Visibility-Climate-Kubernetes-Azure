@@ -5,13 +5,13 @@ base:
 target_col: Output
 
 blob_container:
-  io_files: climate-io-files-03e0100
-  model: climate-model-3e502a3
-  feature_store: climate-feature-store-02126f6
-  logs: climate-logs-4e1f3bd
+  io_files: climate-io-files
+  model: climate-model
+  feature_store: climate-feature-store
+  logs: climate-logs
 
 mlflow_config:
-  exp_name: climate-ops-test-4
+  exp_name: climate-ops
   run_name: mlops
   serialization_format: cloudpickle
 
@@ -54,7 +54,7 @@ RandomForestClassifier:
     - 3
     - 4
     - 5
-
+    
 XGBClassifier:
   learning_rate:
     - 0.5

@@ -25,7 +25,7 @@ class Blob_Operation:
 
         try:
             container_client = ContainerClient.from_connection_string(
-                self.connection_string, container
+                conn_str=self.connection_string, container_name=container
             )
 
             self.log_writer.log("Got container client from connection string", log_file)
