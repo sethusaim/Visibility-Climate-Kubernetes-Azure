@@ -43,7 +43,9 @@ class Data_Getter_Train:
 
         try:
             df = self.blob.read_csv(
-                self.files["train_input"], self.container["feature_store"], self.log_file
+                self.files["train_input"],
+                self.container["feature_store"],
+                self.log_file,
             )
 
             self.log_writer.log(

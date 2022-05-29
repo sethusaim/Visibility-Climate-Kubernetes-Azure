@@ -2,7 +2,7 @@ blob_container:
   pred_data: climate-pred-data
   logs: climate-logs
 
-log_dir: logs
+log_dir: data_transform_pred_logs
 
 data_dir:
   pred_good: good/pred

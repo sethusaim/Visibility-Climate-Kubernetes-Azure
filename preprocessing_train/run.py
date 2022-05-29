@@ -20,7 +20,7 @@ class Run:
         self.files = self.config["files"]
 
         self.container = self.config["blob_container"]
-        
+
         self.data_getter_train = Data_Getter_Train(self.preprocess_log)
 
         self.preprocess = Preprocessor(self.preprocess_log)
