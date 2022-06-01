@@ -1,9 +1,9 @@
 blob_container:
-  io_files: climate-io-files-03e0100
-  model: climate-model-3e502a3
-  logs: climate-logs-4e1f3bd
-  feature_store: climate-feature-store-02126f6
-  component: climate-kubeflow-components-4efdbdc
+  io_files: climate-io-files
+  model: climate-model
+  logs: climate-logs
+  feature_store: climate-feature-store
+  component: climate-kubeflow-components
 
 files:
   features: climate_train_features.csv
@@ -32,6 +32,3 @@ model_save_format: .sav
 knee:
   curve: convex
   direction: decreasing
-
-component: clustering_component.yaml
-
