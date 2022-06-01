@@ -28,8 +28,6 @@ class KMeans_Clustering:
 
         self.kmeans_params = self.config["KMeans"]
 
-        self.model_save_format = self.config["model_save_format"]
-
         self.knee_params = self.config["knee"]
 
         self.max_clusters = self.config["max_clusters"]

@@ -11,8 +11,8 @@ from utils.read_params import read_params
 class Main_Utils:
     """
     Description :   This class is used for main utility functions required in core functions of the service
-    Version     :   1.2
     
+    Version     :   1.2
     Revisions   :   Moved to setup to cloud 
     """
 
