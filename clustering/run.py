@@ -32,6 +32,16 @@ class Run:
         self.class_name = self.__class__.__name__
 
     def run_clustering(self):
+        """
+        Method Name :   run_clustering
+        Description :   This method performs the clustering operation on training data
+        
+        Output      :   An elbow plot figure saved to input files container
+        On Failure  :   Write an exception log and then raise an exception
+        
+        Version     :   1.2
+        Revisions   :   Moved to setup to cloud 
+        """
         method_name = self.run_clustering.__name__
 
         self.log_writer.start_log(
