@@ -10,6 +10,12 @@ from utils.read_params import read_params
 
 
 class Blob_Operation:
+    """
+    Description :   This class is used for performing blob operations required by the service
+    
+    Version     :   1.2
+    Revisions   :   Moved to setup to cloud 
+    """
     def __init__(self):
         self.config = read_params()
 
