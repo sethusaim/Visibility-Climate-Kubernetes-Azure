@@ -29,8 +29,11 @@ class Data_Transform_Pred:
     def add_quotes_to_string(self):
         """
         Method Name :   add_quotes_to_string
-        Description :   This method addes the quotes to the string data present in columns
-
+        Description :   This method is used for adding quotes to string values present in the dataframe
+        
+        Output      :   Quotes are added to string values present in the dataframe
+        On Failure  :   Write an exception log and then raise an exception
+        
         Version     :   1.2
         Revisions   :   moved setup to cloud
         """
@@ -54,6 +57,11 @@ class Data_Transform_Pred:
 
                 abs_f = f[idx][2]
 
+                self.log_writer.log(
+                    "Got dataframe,file name and absolute file name from list of tuples",
+                    self.pred_data_transform_log,
+                )
+
                 df["DATE"] = df["DATE"].apply(lambda x: "'" + str(x) + "'")
 
                 self.log_writer.log(
@@ -67,10 +75,6 @@ class Data_Transform_Pred:
                     self.container["pred_data"],
                     self.pred_data_transform_log,
                 )
-
-            self.log_writer.start_log(
-                key="exit", class_name=self.class_name, method_name=method_name,
-            )
 
             self.log_writer.start_log(
                 "exit", self.class_name, method_name, self.pred_data_transform_log

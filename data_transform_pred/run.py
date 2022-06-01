@@ -5,6 +5,12 @@ from utils.read_params import read_params
 
 
 class Run:
+    """
+    Description :   This class is used for running the data transformation prediction service
+    
+    Version     :   1.2
+    Revisions   :   Moved to setup to cloud 
+    """
     def __init__(self):
         self.config = read_params()
 
@@ -17,6 +23,16 @@ class Run:
         self.data_transform = Data_Transform_Pred()
 
     def pred_data_transform(self):
+        """
+        Method Name :   pred_data_transform
+        Description :   This method is used for performing data transformation operations on prediction data
+        
+        Output      :   Data transformation is done on prediction data and artifacts are stored in s3 buckets
+        On Failure  :   Write an exception log and then raise an exception
+        
+        Version     :   1.2
+        Revisions   :   moved setup to cloud
+        """
         method_name = self.pred_data_transform.__name__
 
         try:
