@@ -3,7 +3,7 @@ from utils.logger import App_Logger
 from utils.read_params import read_params
 
 
-class Data_Transform_Train:
+class Data_Transform_train:
     """
     Description :  This class shall be used for transforming the trainiction batch data before loading it in Database!!.
 
@@ -29,8 +29,11 @@ class Data_Transform_Train:
     def add_quotes_to_string(self):
         """
         Method Name :   add_quotes_to_string
-        Description :   This method addes the quotes to the string data present in columns
-
+        Description :   This method is used for adding quotes to string values present in the dataframe
+        
+        Output      :   Quotes are added to string values present in the dataframe
+        On Failure  :   Write an exception log and then raise an exception
+        
         Version     :   1.2
         Revisions   :   moved setup to cloud
         """
@@ -42,17 +45,22 @@ class Data_Transform_Train:
 
         try:
             lst = self.blob.read_csv_from_folder(
-                self.data_dir["train_good"],
+                self.data_dir["good"],
                 self.container["train_data"],
                 self.train_data_transform_log,
             )
 
-            for _, f in enumerate(lst):
-                df = f[0]
+            for idx, f in enumerate(lst):
+                df = f[idx][0]
 
-                file = f[1]
+                file = f[idx][1]
 
-                abs_f = f[2]
+                abs_f = f[idx][2]
+
+                self.log_writer.log(
+                    "Got dataframe,file name and absolute file name from list of tuples",
+                    self.train_data_transform_log,
+                )
 
                 df["DATE"] = df["DATE"].apply(lambda x: "'" + str(x) + "'")
 
