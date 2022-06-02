@@ -5,6 +5,13 @@ from utils.read_params import read_params
 
 
 class Run:
+    """
+    Description :   This class is used for running the data base operation prediction service
+    
+    Version     :   1.2
+    Revisions   :   Moved to setup to cloud 
+    """
+
     def __init__(self):
         self.config = read_params()
 
@@ -19,6 +26,18 @@ class Run:
         self.db_operation = DB_Operation_Pred()
 
     def pred_data_type_valid(self):
+        """
+        Method Name :   pred_data_type_valid
+        Description :   This method performs the data type validation/database operations on the prediction data
+
+        Output      :   The data type validation/database operations are performed in prediction data and artifacts are stored in 
+                        s3 buckets
+                        
+        On Failure  :   Write an exception log and then raise an exception
+
+        Version     :   1.2
+        Revisions   :   moved setup to cloud
+        """
         method_name = self.pred_data_type_valid.__name__
 
         self.log_writer.start_log(
