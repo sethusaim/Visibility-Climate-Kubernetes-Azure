@@ -11,7 +11,6 @@ from utils.read_params import read_params
 class MongoDB_Operation:
     """
     Description :   This method is used for all mongodb operations
-    Written by  :   iNeuron Intelligence
     
     Version     :   1.2
     Revisions   :   Moved to setup to cloud 
@@ -82,7 +81,7 @@ class MongoDB_Operation:
             collection = database[collection_name]
 
             self.log_writer.log(
-                log_file, f"Created {collection_name} collection in mongodb",
+                f"Created {collection_name} collection in mongodb", log_file
             )
 
             self.log_writer.start_log(
@@ -124,9 +123,7 @@ class MongoDB_Operation:
             if "_id" in df.columns.to_list():
                 df = df.drop(columns=["_id"], axis=1)
 
-            self.log_writer.log(
-                log_file, "Converted collection to dataframe",
-            )
+            self.log_writer.log("Converted collection to dataframe", log_file)
 
             self.log_writer.start_log(
                 "exit", self.class_name, method_name, log_file,
