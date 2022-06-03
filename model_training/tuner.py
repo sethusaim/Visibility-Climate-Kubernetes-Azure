@@ -12,7 +12,6 @@ from utils.read_params import read_params
 class Model_Finder:
     """
     Description :   This class shall  be used to find the model with best accuracy and AUC score.
-    Written by  :   iNeuron Intelligence
     
     Version     :   1.2
     Revisions   :   Moved to setup to cloud 
@@ -30,8 +29,6 @@ class Model_Finder:
         self.model_dir = self.config["models_dir"]
 
         self.container = self.config["blob_container"]
-
-        self.mlflow_config = self.config["mlflow_config"]
 
         self.save_format = self.config["save_format"]
 
@@ -59,7 +56,6 @@ class Model_Finder:
         On Failure  :   Write an exception log and then raise an exception
         
         Version     :   1.2
-        Written by  :   iNeuron Intelligence
         Revisions   :   moved setup to cloud
         """
         method_name = self.get_rf_model.__name__
@@ -113,7 +109,6 @@ class Model_Finder:
         On Failure  :   Write an exception log and then raise an exception
 
         Version     :   1.2
-        Written by  :   iNeuron Intelligence
         Revisions   :   moved setup to cloud
         """
         method_name = self.get_xgboost_model.__name__
@@ -166,7 +161,6 @@ class Model_Finder:
         On Failure  :   Write an exception log and then raise an exception
 
         Version     :   1.2
-        Written by  :   iNeuron Intelligence
         Revisions   :   moved setup to cloud
         """
         method_name = self.get_trained_models.__name__
@@ -226,6 +220,17 @@ class Model_Finder:
             )
 
     def train_and_log_models(self, X_data, Y_data, log_file, idx):
+        """
+        Method Name :   train_and_log_models
+        Description :   The methods gets the trained models and performs logging of models,parameters and metrics to mlflow server 
+        
+        Output      :   The trained models along with thier parameters and metrics are logged into mlflow server and artifacts are stored
+                        blob container                
+        On Failure  :   Write an exception log and then raise an exception
+
+        Version     :   1.2
+        Revisions   :   moved setup to cloud
+        """
         method_name = self.train_and_log_models.__name__
 
         self.log_writer.start_log("start", self.class_name, method_name, log_file)
