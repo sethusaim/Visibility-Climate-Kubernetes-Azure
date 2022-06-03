@@ -7,6 +7,13 @@ from utils.read_params import read_params
 
 
 class Run:
+    """
+    Description :   This class is used for running the model prediction service
+    
+    Version     :   1.2
+    Revisions   :   Moved to setup to cloud 
+    """
+
     def __init__(self):
         self.class_name = self.__class__.__name__
 
@@ -31,9 +38,13 @@ class Run:
     def predict_from_model(self):
         """
         Method Name :   predict_from_model
-        Description :   This method is used for loading from prod model dir of blob container and use them for prediction
+        Description :   This method performs the model prediction on new data
+        
+        Output      :   Model prediction are done on the new data, and results and artifacts are stored in s3 buckets
+        On Failure  :   Write an exception log and then raise an exception
+        
         Version     :   1.2
-        Revisions   :   moved setup to cloud
+        Revisions   :   Moved to setup to cloud 
         """
         method_name = self.predict_from_model.__name__
 

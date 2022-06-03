@@ -1,9 +1,8 @@
 from io import StringIO
 from os import environ, remove
 from pickle import loads
-from re import M
 
-from azure.storage.blob import ContainerClient, BlobServiceClient
+from azure.storage.blob import BlobServiceClient, ContainerClient
 from pandas import read_csv
 
 from utils.logger import App_Logger
@@ -11,6 +10,13 @@ from utils.read_params import read_params
 
 
 class Blob_Operation:
+    """
+    Description :   This class is used for performing blob operations required by the service
+    
+    Version     :   1.2
+    Revisions   :   Moved to setup to cloud 
+    """
+
     def __init__(self):
         self.class_name = self.__class__.__name__
 
@@ -21,6 +27,17 @@ class Blob_Operation:
         self.log_writer = App_Logger()
 
     def get_blob_client(self, blob_fname, container, log_file):
+        """
+        Method Name :   get_blob_client
+        Description :   This method gets the blob client for the specified container name
+        
+        Output      :   The blob client for the particular container name is returned
+        On Failure  :   Write an exception log and then raise an exception
+        
+        Version     :   1.2
+        Revisions   :   moved setup to cloud
+        """
+
         method_name = self.get_blob_client.__name__
 
         self.log_writer.start_log("start", self.class_name, method_name, log_file)
@@ -49,6 +66,16 @@ class Blob_Operation:
             self.log_writer.exception_log(e, self.class_name, method_name, log_file)
 
     def get_container_client(self, container, log_file):
+        """
+        Method Name :   get_container_client
+        Description :   This method gets the container client for the specified container name
+        
+        Output      :   The container client for the particular container name is returned
+        On Failure  :   Write an exception log and then raise an exception
+        
+        Version     :   1.2
+        Revisions   :   moved setup to cloud
+        """
         method_name = self.get_container_client.__name__
 
         self.log_writer.start_log("start", self.class_name, method_name, log_file)
@@ -68,6 +95,16 @@ class Blob_Operation:
             self.log_writer.exception_log(e, self.class_name, method_name, log_file)
 
     def get_object(self, fname, container, log_file):
+        """
+        Method Name :   get_object
+        Description :   This method get the file objects from container
+        
+        Output      :   The file object/objects are returned from the container 
+        On Failure  :   Write an exception log and then raise an exception
+        
+        Version     :   1.2
+        Revisions   :   moved setup to cloud
+        """
         method_name = self.get_object.__name__
 
         self.log_writer.start_log("start", self.class_name, method_name, log_file)
@@ -89,6 +126,16 @@ class Blob_Operation:
             self.log_writer.exception_log(e, self.class_name, method_name, log_file)
 
     def read_object(self, object, log_file, decode=True, make_readable=False):
+        """
+        Method Name :   read_object
+        Description :   This method reads the object, with decode and make_readable as the parameters 
+        
+        Output      :   The file object/objects are read from the container, with decode and make_readable as parameters
+        On Failure  :   Write an exception log and then raise an exception
+        
+        Version     :   1.2
+        Revisions   :   moved setup to cloud
+        """
         method_name = self.read_object.__name__
 
         self.log_writer.start_log("start", self.class_name, method_name, log_file)
@@ -114,6 +161,16 @@ class Blob_Operation:
             self.log_writer.exception_log(e, self.class_name, method_name, log_file)
 
     def read_csv(self, fname, container, log_file):
+        """
+        Method Name :   read_csv
+        Description :   This method reads the csv file from container
+        
+        Output      :   The csv file is read from the container and returned as dataframe
+        On Failure  :   Write an exception log and then raise an exception
+        
+        Version     :   1.2
+        Revisions   :   moved setup to cloud
+        """
         method_name = self.read_csv.__name__
 
         self.log_writer.start_log("start", self.class_name, method_name, log_file)
@@ -137,6 +194,16 @@ class Blob_Operation:
             self.log_writer.exception_log(e, self.class_name, method_name, log_file)
 
     def load_model(self, model_name, container, save_format, log_file, model_dir=None):
+        """
+        Method Name :   load_model
+        Description :   This method loads the model from container with save format, model_dir if present 
+        
+        Output      :   The model is loaded from container with save format, model_dir if present 
+        On Failure  :   Write an exception log and then raise an exception
+        
+        Version     :   1.2
+        Revisions   :   moved setup to cloud
+        """
         method_name = self.load_model.__name__
 
         self.log_writer.start_log("start", self.class_name, method_name, log_file)
@@ -170,6 +237,16 @@ class Blob_Operation:
             self.log_writer.exception_log(e, self.class_name, method_name, log_file)
 
     def load_file(self, fname, container, log_file):
+        """
+        Method Name :   load_file
+        Description :   This method loads the file from a blob container
+        
+        Output      :   The file is loaded from the blob container
+        On Failure  :   Write an exception log and then raise an exception
+        
+        Version     :   1.2
+        Revisions   :   moved setup to cloud
+        """
         method_name = self.load_file.__name__
 
         self.log_writer.start_log("start", self.class_name, method_name, log_file)
@@ -191,6 +268,16 @@ class Blob_Operation:
             self.log_writer.exception_log(e, self.class_name, method_name, log_file)
 
     def delete_file(self, fname, container, log_file):
+        """
+        Method Name :   delete_file
+        Description :   This method deletes the file from a blob container
+        
+        Output      :   The file is deleted from the blob container
+        On Failure  :   Write an exception log and then raise an exception
+        
+        Version     :   1.2
+        Revisions   :   moved setup to cloud
+        """
         method_name = self.delete_file.__name__
 
         self.log_writer.start_log("start", self.class_name, method_name, log_file)
@@ -218,6 +305,20 @@ class Blob_Operation:
         delete=True,
         replace=True,
     ):
+        """
+        Method Name :   upload_file
+        Description :   This method uploades the file based on parameters of delete and replace,
+                        - delete parameter removes the local copy of the file, by default delete is set to True, since we do not want to 
+                        have any information within docker container
+                        - replace parameter replaces the existing file in the container, by default replace is set to True, because we are 
+                        updating old file with new data.
+        
+        Output      :   The file is uploaded to the blob container,with default parameters
+        On Failure  :   Write an exception log and then raise an exception
+        
+        Version     :   1.2
+        Revisions   :   moved setup to cloud
+        """
         method_name = self.upload_file.__name__
 
         self.log_writer.start_log("start", self.class_name, method_name, log_file)
@@ -275,6 +376,16 @@ class Blob_Operation:
     def upload_df_as_csv(
         self, dataframe, local_fname, container_fname, container, log_file
     ):
+        """
+        Method Name :   upload_df_as_csv
+        Description :   This method uploads the dataframe as csv file to blob container
+        
+        Output      :   The dataframe is uploaded to blob container as a csv file
+        On Failure  :   Write an exception log and then raise an exception
+        
+        Version     :   1.2
+        Revisions   :   moved setup to cloud
+        """
         method_name = self.upload_df_as_csv.__name__
 
         self.log_writer.start_log("start", self.class_name, method_name, log_file)
@@ -294,6 +405,16 @@ class Blob_Operation:
             self.log_writer.exception_log(e, self.class_name, method_name, log_file)
 
     def get_files_from_folder(self, folder_name, container, log_file):
+        """
+        Method Name :   get_files_from_folder
+        Description :   This method get the files from the folder present in the container
+        
+        Output      :   A list of files are returned from the folder present in the container
+        On Failure  :   Write an exception log and then raise an exception
+        
+        Version     :   1.2
+        Revisions   :   moved setup to cloud
+        """
         method_name = self.get_files_from_folder.__name__
 
         self.log_writer.start_log("start", self.class_name, method_name, log_file)
