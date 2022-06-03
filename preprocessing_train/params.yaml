@@ -1,7 +1,7 @@
 blob_container:
-  io_files: climate-io-files-03e0100
-  logs: climate-logs-4e1f3bd
-  feature_store: climate-feature-store-02126f6
+  io_files: climate-io-files
+  logs: climate-logs
+  feature_store: climate-feature-store
 
 files:
   train_input: train_input_file.csv
@@ -16,13 +16,13 @@ model_dir:
 
 log:
   preprocess_train: preprocess_train_log.txt
-  upload: upload_log.txt
+  upload: upload_preprocessing_train_log.txt
 
 knn_imputer:
   n_neighbors: 3
   weights: uniform
 
-log_dir: logs
+log_dir: preprocess_train_logs
 
 pca_model:
   n_components: 100
