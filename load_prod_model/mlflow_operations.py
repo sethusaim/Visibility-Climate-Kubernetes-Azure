@@ -2,9 +2,8 @@ from os import environ
 
 from mlflow import get_experiment_by_name, search_runs, set_tracking_uri
 from mlflow.tracking import MlflowClient
+
 from blob_operations import Blob_Operation
-
-
 from utils.logger import App_Logger
 from utils.main_utils import Main_Utils
 from utils.read_params import read_params
@@ -203,10 +202,11 @@ class MLFlow_Operation:
         """
         Method Name :   transition_mlflow_model
         Description :   This method transitions mlflow model from one stage to other stage, and does the same in s3 container
+        
         Output      :   A mlflow model is transitioned from one stage to another, and same is reflected in s3 container
         On Failure  :   Write an exception log and then raise an exception
-        Version     :   1.2
         
+        Version     :   1.2
         Revisions   :   moved setup to cloud
         """
         method_name = self.transition_mlflow_model.__name__

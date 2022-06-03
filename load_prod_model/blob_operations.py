@@ -1,4 +1,3 @@
-from cmath import log
 from os import environ
 
 from azure.storage.blob import BlobServiceClient, ContainerClient
@@ -8,6 +7,13 @@ from utils.read_params import read_params
 
 
 class Blob_Operation:
+    """
+    Description :   This class is used for performing blob operations required by the service
+    
+    Version     :   1.2
+    Revisions   :   Moved to setup to cloud 
+    """
+
     def __init__(self):
         self.class_name = self.__class__.__name__
 
@@ -18,6 +24,16 @@ class Blob_Operation:
         self.connection_string = environ["AZURE_CONN_STR"]
 
     def get_container_client(self, container, log_file):
+        """
+        Method Name :   get_container_client
+        Description :   This method gets the container client for the specified container name
+        
+        Output      :   The container client for the particular container name is returned
+        On Failure  :   Write an exception log and then raise an exception
+        
+        Version     :   1.2
+        Revisions   :   moved setup to cloud
+        """
         method_name = self.get_container_client.__name__
 
         self.log_writer.start_log("start", self.class_name, method_name, log_file)
@@ -37,6 +53,16 @@ class Blob_Operation:
             self.log_writer.exception_log(e, self.class_name, method_name, log_file)
 
     def get_blob_client(self, blob_fname, container, log_file):
+        """
+        Method Name :   get_blob_client
+        Description :   This method gets the blob client for the specified container name
+        
+        Output      :   The blob client for the particular container name is returned
+        On Failure  :   Write an exception log and then raise an exception
+        
+        Version     :   1.2
+        Revisions   :   moved setup to cloud
+        """
         method_name = self.get_blob_client.__name__
 
         self.log_writer.start_log("start", self.class_name, method_name, log_file)
@@ -62,6 +88,16 @@ class Blob_Operation:
             self.log_writer.exception_log(e, self.class_name, method_name, log_file)
 
     def get_blob_url(self, fname, container, log_file):
+        """
+        Method Name :   get_blob_url
+        Description :   This method gets the blob url for the specified file name present in the container
+        
+        Output      :   The blob url for the particular file name is returned present in the container
+        On Failure  :   Write an exception log and then raise an exception
+        
+        Version     :   1.2
+        Revisions   :   moved setup to cloud
+        """
         method_name = self.get_blob_url.__name__
 
         self.log_writer.start_log("start", self.class_name, method_name, log_file)
@@ -85,6 +121,16 @@ class Blob_Operation:
             self.log_writer.exception_log(e, self.class_name, method_name, log_file)
 
     def copy_data(self, from_fname, from_container, to_fname, to_container, log_file):
+        """
+        Method Name :   copy_data
+        Description :   This method copies the data (from_fname) from one container to other container with to_fname as file name 
+        
+        Output      :   The data is copied from one container to other container with to_fname as file name
+        On Failure  :   Write an exception log and then raise an exception
+        
+        Version     :   1.2
+        Revisions   :   moved setup to cloud
+        """
         method_name = self.copy_data.__name__
 
         self.log_writer.start_log("start", self.class_name, method_name, log_file)
@@ -109,6 +155,16 @@ class Blob_Operation:
             self.log_writer.exception_log(e, self.class_name, method_name, log_file)
 
     def get_files_from_folder(self, folder_name, container, log_file):
+        """
+        Method Name :   get_files_from_folder
+        Description :   This method get the files from folder present in container
+        
+        Output      :   A list of files are returned from folder_name present in container 
+        On Failure  :   Write an exception log and then raise an exception
+        
+        Version     :   1.2
+        Revisions   :   moved setup to cloud
+        """
         method_name = self.get_files_from_folder.__name__
 
         self.log_writer.start_log("start", self.class_name, method_name, log_file)

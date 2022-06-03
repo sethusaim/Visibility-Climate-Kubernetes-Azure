@@ -6,19 +6,17 @@ models_dir:
 model_save_format: .sav
 
 mlflow_config:
-  exp_name : climate-ops-test-2
+  exp_name: climate-ops-test-2
 
 feature_pattern: climate_features-
 
 blob_container:
-  model: climate-model-3e502a3
-  logs: climate-logs-4e1f3bd
+  model: climate-model
+  logs: climate-logs
   feature_store: climate-feature-store-02126f6
 
 log:
-  upload: upload_log.txt
+  upload: upload_load_prod_model_log.txt
   load_prod_model: load_prod_model.txt
 
-log_dir: logs
-
-
+log_dir: load_prod_model_logs

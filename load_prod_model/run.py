@@ -1,6 +1,5 @@
 from blob_operations import Blob_Operation
 from mlflow_operations import MLFlow_Operation
-
 from utils.logger import App_Logger
 from utils.main_utils import Main_Utils
 from utils.read_params import read_params
@@ -22,8 +21,6 @@ class Load_Prod_Model:
         self.container = self.config["blob_container"]
 
         self.load_prod_model_log = self.config["log"]["load_prod_model"]
-
-        self.model_dir = self.config["models_dir"]
 
         self.mlflow_config = self.config["mlflow_config"]
 
