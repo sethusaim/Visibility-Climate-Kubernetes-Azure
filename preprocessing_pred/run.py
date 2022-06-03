@@ -1,13 +1,19 @@
 from blob_operations import Blob_Operation
 from data_loader_pred import Data_Getter_Pred
 from preprocessing import Preprocessor
-
 from utils.logger import App_Logger
 from utils.main_utils import Main_Utils
 from utils.read_params import read_params
 
 
 class Run:
+    """
+    Description :   This class is used for running the preprocessing prediction pipeline
+    Version     :   1.2
+    
+    Revisions   :   Moved to setup to cloud 
+    """
+
     def __init__(self):
         self.class_name = self.__class__.__name__
 

@@ -30,8 +30,8 @@ class Data_Getter_Pred:
         """
         Method Name :   get_data
         Description :   This method reads the data from the input files blob container where the prediction file is present
-        Output      :   A pandas dataframe
         
+        Output      :   A pandas dataframe
         On Failure  :   Write an exception log and then raise an exception
         
         Version     :   1.2

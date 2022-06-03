@@ -11,9 +11,10 @@ from utils.read_params import read_params
 
 class Preprocessor:
     """
-    Written By  :   iNeuron Intelligence
+    Description :   This class shall be used to clean and transform the data before training
     Version     :   1.2
-    Revisions   :   moved setup to cloud
+    
+    Revisions   :   Moved to setup to cloud 
     """
 
     def __init__(self, log_file):
@@ -41,7 +42,6 @@ class Preprocessor:
         Output      :   A pandas dataframe after removing the specified columns.
         On Failure  :   Write an exception log and then raise an exception
 
-        Written By  :   iNeuron Intelligence
         Version     :   1.2
         Revisions   :   moved setup to cloud
         """
@@ -81,7 +81,6 @@ class Preprocessor:
         Output      :   Returns two separate Dataframes, one containing features and the other containing Labels .
         On Failure  :   Write an exception log and then raise an exception
 
-        Written By  :   iNeuron Intelligence
         Version     :   1.2
         Revisions   :   moved setup to cloud
         """
@@ -119,7 +118,6 @@ class Preprocessor:
         Output      :   Unnecessary columns are dropped in the dataframe
         On Failure  :   Write an exception log and then raise an exception
 
-        Written By  :   iNeuron Intelligence
         Version     :   1.2
         Revisions   :   moved setup to cloud
         """
@@ -153,7 +151,6 @@ class Preprocessor:
         Output      :   A dataframe where invalid values are replaced with null
         On Failure  :   Write an exception log and then raise an exception
 
-        Written By  :   iNeuron Intelligence
         Version     :   1.2
         Revisions   :   moved setup to cloud
         """
@@ -192,7 +189,6 @@ class Preprocessor:
                         returns the list of columns for which null values are present.
         On Failure  :   Write an exception log and then raise an exception
 
-        Written By  :   iNeuron Intelligence
         Version     :   1.2
         Revisions   :   moved setup to cloud
         """
@@ -256,7 +252,6 @@ class Preprocessor:
         Output      :   A dataframe which has all the categorical values encoded.
         On Failure  :   Write an exception log and then raise an exception
 
-        Written By  :   iNeuron Intelligence
         Version     :   1.2
         Revisions   :   moved setup to cloud
         """
@@ -293,7 +288,6 @@ class Preprocessor:
         Output      : A dataframe which has all the missing values imputed.
         On Failure  : Raise Exception
 
-        Written By  : iNeuron Intelligence
         Version     : 1.2
         Revisions   : moved setup to cloud
         """
@@ -331,7 +325,6 @@ class Preprocessor:
         Output      : A dataframe which has all the missing values imputed.
         On Failure  : Raise Exception
 
-        Written By  : iNeuron Intelligence
         Version     : 1.2
         Revisions   : moved setup to cloud
         """
@@ -383,7 +376,6 @@ class Preprocessor:
         Output      :   List of the columns with standard deviation of zero
         On Failure  :   Write an exception log and then raise an exception
 
-        Written By  :   iNeuron Intelligence
         Version     :   1.2
         Revisions   :   moved setup to cloud
         """
