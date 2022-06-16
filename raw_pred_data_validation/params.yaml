@@ -1,22 +1,22 @@
 blob_container:
-  io_files: climate-io-files-03e0100
-  logs: climate-logs-4e1f3bd
-  raw_pred_data: climate-raw-data-140436f
-  pred_data: climate-pred-data-5acbd2d
+  io_files: climate-io-files
+  logs: climate-logs
+  raw_pred_data: climate-raw-data
+  pred_data: climate-pred-data
 
 data_dir:
   raw_pred_batch: pred_batch
-  pred_good: good/pred  
+  pred_good: good/pred
   pred_bad: bad/pred
 
 files:
   pred_schema: climate-schema_preding.json
   regex: climate-regex.txt
 
-log_dir: logs
+log_dir: raw_pred_data_val_logs
 
 log:
-  upload: upload_log.txt
+  upload: upload_raw_pred_data_val_log.txt
   raw_pred_main: raw_pred_main_log.txt
   values_from_schema: values_from_schema_log.txt
   general: general_log.txt

@@ -11,6 +11,7 @@ class Run:
     Version     :   1.2
     Revisions   :   Moved to setup to cloud 
     """
+
     def __init__(self):
         self.config = read_params()
 
