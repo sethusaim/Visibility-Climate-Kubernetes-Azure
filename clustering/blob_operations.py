@@ -24,6 +24,8 @@ class Blob_Operation:
 
         self.class_name = self.__class__.__name__
 
+        self.container = self.config["blob_container"]
+
         self.log_writer = App_Logger()
 
     def get_container_client(self, container, log_file):
@@ -43,7 +45,8 @@ class Blob_Operation:
 
         try:
             container_client = ContainerClient.from_connection_string(
-                conn_str=self.connection_string, container_name=container
+                conn_str=self.connection_string,
+                container_name=self.container[container],
             )
 
             self.log_writer.log("Got container client from connection string", log_file)
