@@ -77,7 +77,9 @@ class Blob_Operation:
         try:
             client = BlobServiceClient.from_connection_string(self.connection_string)
 
-            blob_client = client.get_blob_client(container=container, blob=blob_fname)
+            blob_client = client.get_blob_client(
+                container=self.container[container], blob=blob_fname
+            )
 
             return blob_client
 

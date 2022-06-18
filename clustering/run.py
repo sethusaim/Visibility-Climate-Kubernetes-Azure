@@ -18,15 +18,11 @@ class Run:
 
         self.files = self.config["files"]
 
-        self.container = self.config["blob_container"]
-
-        self.clustering_log = self.config["log"]["clustering"]
-
         self.utils = Main_Utils()
 
         self.log_writer = App_Logger()
 
-        self.kmeans_op = KMeans_Clustering(self.clustering_log)
+        self.kmeans_op = KMeans_Clustering("clustering")
 
         self.blob = Blob_Operation()
 
@@ -45,31 +41,23 @@ class Run:
         """
         method_name = self.run_clustering.__name__
 
-        self.log_writer.start_log(
-            "start", self.class_name, method_name, self.clustering_log
-        )
+        self.log_writer.start_log("start", self.class_name, method_name, "clustering")
 
         try:
             X = self.blob.read_csv(
-                self.files["features"],
-                self.container["feature_store"],
-                self.clustering_log,
+                self.files["features"], "feature_store", "clustering"
             )
 
             self.log_writer.log(
-                f"Read the features file for training from {self.container['feature_store']} container",
-                self.clustering_log,
+                "Read the features file for training from feature store container",
+                "clustering",
             )
 
-            Y = self.blob.read_csv(
-                self.files["targets"],
-                self.container["feature_store"],
-                self.clustering_log,
-            )
+            Y = self.blob.read_csv(self.files["targets"], "feature_store", "clustering")
 
             self.log_writer.log(
-                f"Read the labels for training from {self.container['feature_store']} container",
-                self.clustering_log,
+                "Read the labels for training from feature store container",
+                "clustering",
             )
 
             num_clusters = self.kmeans_op.draw_elbow_plot(X)
@@ -81,7 +69,7 @@ class Run:
             list_of_clusters = X["Cluster"].unique()
 
             self.log_writer.log(
-                f"Got the {list_of_clusters} unique clusters", self.clustering_log
+                f"Got the {list_of_clusters} unique clusters", "clustering"
             )
 
             for i in list_of_clusters:
@@ -92,37 +80,35 @@ class Run:
                 cluster_label = cluster_data["Labels"]
 
                 cluster_feats_fname = self.utils.get_cluster_fname(
-                    self.files["features"], i, self.clustering_log
+                    self.files["features"], i, "clustering"
                 )
 
                 cluster_label_fname = self.utils.get_cluster_fname(
-                    self.files["targets"], i, self.clustering_log
+                    self.files["targets"], i, "clustering"
                 )
 
                 self.blob.upload_df_as_csv(
                     cluster_features,
                     cluster_feats_fname,
                     cluster_feats_fname,
-                    self.container["feature_store"],
-                    self.clustering_log,
+                    "feature_store",
+                    "clustering",
                 )
 
                 self.blob.upload_df_as_csv(
                     cluster_label,
                     cluster_label_fname,
                     cluster_label_fname,
-                    self.container["feature_store"],
-                    self.clustering_log,
+                    "feature_store",
+                    "clustering",
                 )
 
             self.log_writer.start_log(
-                "exit", self.class_name, method_name, self.clustering_log
+                "exit", self.class_name, method_name, "clustering"
             )
 
         except Exception as e:
-            self.log_writer.exception_log(
-                e, self.class_name, method_name, self.clustering_log
-            )
+            self.log_writer.exception_log(e, self.class_name, method_name, "clustering")
 
 
 if __name__ == "__main__":

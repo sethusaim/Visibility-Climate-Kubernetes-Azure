@@ -80,7 +80,7 @@ class KMeans_Clustering:
             self.blob.upload_file(
                 self.files["elbow_plot"],
                 self.files["elbow_plot"],
-                self.container["io_files"],
+                "io_files",
                 self.log_file,
             )
 
@@ -125,7 +125,7 @@ class KMeans_Clustering:
                 self.kmeans,
                 self.model_dir["trained"],
                 self.model_save_format,
-                self.container["model"],
+                "model",
                 self.log_file,
             )
 
