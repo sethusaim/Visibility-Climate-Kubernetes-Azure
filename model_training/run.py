@@ -21,8 +21,6 @@ class Run:
 
         self.config = read_params()
 
-        self.train_log = self.config["log"]
-
         self.container = self.config["blob_container"]
 
         self.model_dir = self.config["models_dir"]
@@ -31,7 +29,7 @@ class Run:
 
         self.save_format = self.config["save_format"]
 
-        self.model = Model_Finder(self.train_log["model_train"])
+        self.model = Model_Finder("model_train")
 
         self.utils = Main_Utils()
 
@@ -39,7 +37,7 @@ class Run:
 
         self.log_writer = App_Logger()
 
-        self.mlflow_op = MLFlow_Operation(self.train_log["model_train"])
+        self.mlflow_op = MLFlow_Operation("model_train")
 
     def training_model(self):
         """
@@ -55,28 +53,23 @@ class Run:
         """
         method_name = self.training_model.__name__
 
-        self.log_writer.start_log(
-            "start", self.class_name, method_name, self.train_log["model_train"]
-        )
+        self.log_writer.start_log("start", self.class_name, method_name, "model_train")
 
         try:
             feat_fnames = self.blob.get_files_from_folder(
-                self.config["file_pattern"],
-                self.container["feature_store"],
-                self.train_log["model_train"],
+                self.config["file_pattern"], "feature_store", "model_train",
             )
 
             lst_clusters = len(feat_fnames)
 
             self.log_writer.log(
-                f"Found the number of cluster to be {lst_clusters}",
-                self.train_log["model_train"],
+                f"Found the number of cluster to be {lst_clusters}", "model_train",
             )
 
             kmeans_model = self.blob.load_model(
                 "KMeans",
-                self.container["model"],
-                self.train_log["model_train"],
+                "model",
+                "model_train",
                 self.save_format,
                 model_dir=self.model_dir["train"],
             )
@@ -93,56 +86,45 @@ class Run:
                 end_run()
 
             for i in range(lst_clusters):
-                feat_name = self.utils.get_cluster_fname(
-                    "features", i, self.train_log["model_train"]
-                )
+                feat_name = self.utils.get_cluster_fname("features", i, "model_train")
 
-                label_name = self.utils.get_cluster_fname(
-                    "targets", i, self.train_log["model_train"]
-                )
+                label_name = self.utils.get_cluster_fname("targets", i, "model_train")
 
                 self.log_writer.log(
                     "Got the cluster features and cluster label file names",
-                    self.train_log["model_train"],
+                    "model_train",
                 )
 
                 cluster_feat = self.utils.get_features_csv_as_numpy_array(
-                    feat_name,
-                    self.container["feature_store"],
-                    self.train_log["model_train"],
+                    feat_name, "feature_store", "model_train",
                 )
 
                 cluster_label = self.utils.get_targets_csv_as_numpy_array(
-                    label_name,
-                    self.container["feature_store"],
-                    self.train_log["model_train"],
+                    label_name, "feature_store", "model_train",
                 )
 
                 self.log_writer.log(
-                    f"Got cluster features and cluster labels dataframe from {self.container['feature_store']} container",
-                    self.train_log["model_train"],
+                    "Got cluster features and cluster labels dataframe from feature store container",
+                    "model_train",
                 )
 
                 with start_run(run_name=self.mlflow_config["run_name"] + str(i)):
                     self.model.train_and_log_models(
-                        cluster_feat,
-                        cluster_label,
-                        self.train_log["model_train"],
-                        idx=i,
+                        cluster_feat, cluster_label, "model_train", idx=i,
                     )
 
             self.log_writer.log(
                 "Completed model and training and logging of the models to mlflow",
-                self.train_log["model_train"],
+                "model_train",
             )
 
             self.log_writer.start_log(
-                "exit", self.class_name, method_name, self.train_log["model_train"]
+                "exit", self.class_name, method_name, "model_train"
             )
 
         except Exception as e:
             self.log_writer.exception_log(
-                e, self.class_name, method_name, self.train_log["model_train"]
+                e, self.class_name, method_name, "model_train"
             )
 
 

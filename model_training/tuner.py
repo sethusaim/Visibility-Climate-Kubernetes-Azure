@@ -257,7 +257,7 @@ class Model_Finder:
                 self.blob.save_model(
                     model,
                     self.model_dir["train"],
-                    self.container["model"],
+                    "model",
                     self.save_format,
                     log_file,
                     idx=idx,

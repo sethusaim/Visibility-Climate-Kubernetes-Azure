@@ -21,8 +21,6 @@ class Model_Utils:
 
         self.tuner_kwargs = self.config["model_utils"]
 
-        self.container = self.config["blob_container"]
-
         self.log_writer = App_Logger()
 
     def get_model_score(self, model, test_x, test_y, log_file):
@@ -54,7 +52,7 @@ class Model_Utils:
                 model_score = accuracy_score(test_y, preds)
 
                 self.log_writer.log(
-                    f"Accuracy for {model_name} is {model_score}", log_file
+                    "Accuracy for {model_name} is {model_score}", log_file
                 )
 
             else:
