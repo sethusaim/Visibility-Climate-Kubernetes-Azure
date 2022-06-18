@@ -12,17 +12,11 @@ class Run:
 
         self.config = read_params()
 
-        self.utils = Main_Utils()
-
-        self.preprocess_log = self.config["log"]["preprocess_train"]
-
         self.files = self.config["files"]
 
-        self.container = self.config["blob_container"]
+        self.data_getter_train = Data_Getter_Train("preprocess_train")
 
-        self.data_getter_train = Data_Getter_Train(self.preprocess_log)
-
-        self.preprocess = Preprocessor(self.preprocess_log)
+        self.preprocess = Preprocessor("preprocess_train")
 
         self.log_writer = App_Logger()
 
@@ -32,7 +26,7 @@ class Run:
         method_name = self.run_preprocess.__name__
 
         self.log_writer.start_log(
-            "start", self.class_name, method_name, self.preprocess_log
+            "start", self.class_name, method_name, "preprocess_train"
         )
 
         try:
@@ -42,51 +36,51 @@ class Run:
 
             self.log_writer.log(
                 f"Preprocessing function is_null_present returned null values present to be {is_null_present}",
-                self.preprocess_log,
+                "preprocess_train",
             )
 
             self.log_writer.log(
-                "Imputing missing values for the data", self.preprocess_log
+                "Imputing missing values for the data", "preprocess_train"
             )
 
             if is_null_present:
                 data = self.preprocess.impute_missing_values(data)
 
             self.log_writer.log(
-                "Imputed missing values for the data", self.preprocess_log
+                "Imputed missing values for the data", "preprocess_train"
             )
 
             cols_to_drop = self.preprocess.get_columns_with_zero_std_deviation(data)
 
             self.log_writer.log(
-                "Got columns with zero standard deviation", self.preprocess_log
+                "Got columns with zero standard deviation", "preprocess_train"
             )
 
             data = self.preprocess.remove_columns(data, cols_to_drop)
 
             self.log_writer.log(
-                "Removed columns with zero standard deviation", self.preprocess_log
+                "Removed columns with zero standard deviation", "preprocess_train"
             )
 
             self.blob.upload_df_as_csv(
                 data,
                 self.files["train_input_preprocess"],
                 self.files["train_input_preprocess"],
-                self.container["feature_store"],
-                self.preprocess_log,
+                "feature_store",
+                "preprocess_train",
             )
 
             self.log_writer.log(
-                "Completed preprocessing for trainiction data", self.preprocess_log
+                "Completed preprocessing for trainiction data", "preprocess_train"
             )
 
             self.log_writer.start_log(
-                "exit", self.class_name, method_name, self.preprocess_log
+                "exit", self.class_name, method_name, "preprocess_train"
             )
 
         except Exception as e:
             self.log_writer.exception_log(
-                e, self.class_name, method_name, self.preprocess_log
+                e, self.class_name, method_name, "preprocess_train"
             )
 
 

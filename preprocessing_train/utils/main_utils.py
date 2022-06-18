@@ -23,13 +23,7 @@ class Main_Utils:
 
         self.config = read_params()
 
-        self.files = self.config["files"]
-
-        self.container = self.config["blob_container"]
-
         self.log_dir = self.config["log_dir"]
-
-        self.log_file = self.config["log"]["upload"]
 
         self.class_name = self.__class__.__name__
 
@@ -46,13 +40,13 @@ class Main_Utils:
         """
         method_name = self.upload_logs.__name__
 
-        self.log_writer.start_log("start", self.class_name, method_name, self.log_file)
+        self.log_writer.start_log("start", self.class_name, method_name, "upload")
 
         try:
             lst = listdir(self.log_dir)
 
             self.log_writer.log(
-                f"Got list of logs from {self.log_dir} folder", self.log_file
+                f"Got list of logs from {self.log_dir} folder", "upload"
             )
 
             for f in lst:
@@ -60,61 +54,13 @@ class Main_Utils:
 
                 dest_f = self.log_dir + "/" + f
 
-                self.blob.upload_file(
-                    local_f, dest_f, self.container["logs"], self.log_file
-                )
+                self.blob.upload_file(local_f, dest_f, "logs", "upload")
 
-            self.log_writer.log(
-                f"Uploaded logs to {self.container['logs']}", self.log_file
-            )
+            self.log_writer.log(f"Uploaded logs to logs container", "upload")
 
-            self.log_writer.start_log(
-                "exit", self.class_name, method_name, self.log_file
-            )
+            self.log_writer.start_log("exit", self.class_name, method_name, "upload")
 
             rmtree(self.log_dir)
 
         except Exception as e:
-            self.log_writer.exception_log(
-                e, self.class_name, method_name, self.log_file
-            )
-
-    def delete_pred_file(self, log_file):
-        """
-        Method Name :   delete_pred_file
-        Description :   This method deletes the existing prediction file for the model prediction starts
-        
-        Output      :   An existing prediction file is deleted
-        On Failure  :   Write an exception log and then raise an exception
-        
-        Version     :   1.2
-        Revisions   :   moved setup to cloud
-        """
-        method_name = self.delete_pred_file.__name__
-
-        self.log_writer.start_log("start", self.class_name, method_name, log_file)
-
-        try:
-            f_exists = self.blob.load_file(
-                self.files["pred_file"], self.container["io_files"], log_file
-            )
-
-            if f_exists is True:
-                self.log_writer.log(
-                    "Found existing Prediction batch file. Deleting it.", log_file
-                )
-
-                self.blob.delete_file(
-                    self.files["pred_file"], self.container["io_files"], log_file
-                )
-
-            else:
-                self.log_writer.log(
-                    "Did not find any existing prediction batch file, not deleting it",
-                    log_file,
-                )
-
-            self.log_writer.start_log("exit", self.class_name, method_name, log_file)
-
-        except Exception as e:
-            raise e
+            self.log_writer.exception_log(e, self.class_name, method_name, "upload")

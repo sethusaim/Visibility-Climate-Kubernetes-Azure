@@ -18,8 +18,6 @@ class Data_Getter_Train:
 
         self.files = self.config["files"]
 
-        self.container = self.config["blob_container"]
-
         self.blob = Blob_Operation()
 
         self.log_writer = App_Logger()
@@ -43,15 +41,10 @@ class Data_Getter_Train:
 
         try:
             df = self.blob.read_csv(
-                self.files["train_input"],
-                self.container["feature_store"],
-                self.log_file,
+                self.files["train_input"], "feature_store", self.log_file
             )
 
-            self.log_writer.log(
-                f"Data loaded from file {self.files['train_input']} and container {self.container['feature_store']}",
-                self.log_file,
-            )
+            self.log_writer.log("Data loaded from container", self.log_file)
 
             self.log_writer.start_log(
                 "exit", self.class_name, method_name, self.log_file

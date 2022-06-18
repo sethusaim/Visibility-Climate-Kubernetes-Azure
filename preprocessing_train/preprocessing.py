@@ -28,8 +28,6 @@ class Preprocessor:
 
         self.imputer_params = self.config["knn_imputer"]
 
-        self.container = self.config["blob_container"]
-
         self.blob = Blob_Operation()
 
         self.log_writer = App_Logger()
@@ -47,9 +45,7 @@ class Preprocessor:
         """
         method_name = self.remove_columns.__name__
 
-        self.log_writer.start_log(
-            "start", self.class_name, method_name, self.log_file,
-        )
+        self.log_writer.start_log("start", self.class_name, method_name, self.log_file)
 
         try:
             self.data = data
@@ -61,7 +57,7 @@ class Preprocessor:
             self.log_writer.log("Column removal Successful", self.log_file)
 
             self.log_writer.start_log(
-                "exit", self.class_name, method_name, self.log_file,
+                "exit", self.class_name, method_name, self.log_file
             )
 
             return self.useful_data
@@ -70,7 +66,7 @@ class Preprocessor:
             self.log_writer.log("Column removal Unsuccessful", self.log_file)
 
             self.log_writer.exception_log(
-                e, self.class_name, method_name, self.log_file,
+                e, self.class_name, method_name, self.log_file
             )
 
     def separate_label_feature(self, data, label_column_name):
@@ -86,9 +82,7 @@ class Preprocessor:
         """
         method_name = self.separate_label_feature.__name__
 
-        self.log_writer.start_log(
-            "start", self.class_name, method_name, self.log_file,
-        )
+        self.log_writer.start_log("start", self.class_name, method_name, self.log_file)
 
         try:
             self.X = data.drop(labels=label_column_name, axis=1)
@@ -98,7 +92,7 @@ class Preprocessor:
             self.log_writer.log("Label Separation Successful", self.log_file)
 
             self.log_writer.start_log(
-                "exit", self.class_name, method_name, self.log_file,
+                "exit", self.class_name, method_name, self.log_file
             )
 
             return self.X, self.Y
@@ -107,7 +101,7 @@ class Preprocessor:
             self.log_writer.log("Label Separation Unsuccessful", self.log_file)
 
             self.log_writer.exception_log(
-                e, self.class_name, method_name, self.log_file,
+                e, self.class_name, method_name, self.log_file
             )
 
     def drop_unnecessary_columns(self, data, cols):
@@ -123,9 +117,7 @@ class Preprocessor:
         """
         method_name = self.drop_unnecessary_columns.__name__
 
-        self.log_writer.start_log(
-            "start", self.class_name, method_name, self.log_file,
-        )
+        self.log_writer.start_log("start", self.class_name, method_name, self.log_file)
 
         try:
             data = data.drop(cols, axis=1)
@@ -133,14 +125,14 @@ class Preprocessor:
             self.log_writer.log("Dropped unnecessary columns", self.log_file)
 
             self.log_writer.start_log(
-                "exit", self.class_name, method_name, self.log_file,
+                "exit", self.class_name, method_name, self.log_file
             )
 
             return data
 
         except Exception as e:
             self.log_writer.exception_log(
-                e, self.class_name, method_name, self.log_file,
+                e, self.class_name, method_name, self.log_file
             )
 
     def replace_invalid_with_null(self, data):
@@ -156,9 +148,7 @@ s
         """
         method_name = self.replace_invalid_with_null.__name__
 
-        self.log_writer.start_log(
-            "start", self.class_name, method_name, self.log_file,
-        )
+        self.log_writer.start_log("start", self.class_name, method_name, self.log_file)
 
         try:
             for column in data.columns:
@@ -170,14 +160,14 @@ s
             self.log_writer.log("Replaced invalid values with nan", self.log_file)
 
             self.log_writer.start_log(
-                "exit", self.class_name, method_name, self.log_file,
+                "exit", self.class_name, method_name, self.log_file
             )
 
             return data
 
         except Exception as e:
             self.log_writer.exception_log(
-                e, self.class_name, method_name, self.log_file,
+                e, self.class_name, method_name, self.log_file
             )
 
     def is_null_present(self, data):
@@ -194,9 +184,7 @@ s
         """
         method_name = self.is_null_present.__name__
 
-        self.log_writer.start_log(
-            "start", self.class_name, method_name, self.log_file,
-        )
+        self.log_writer.start_log("start", self.class_name, method_name, self.log_file)
 
         try:
 
@@ -221,15 +209,17 @@ s
 
                 self.null_df["missing values count"] = asarray(data.isna().sum())
 
-            self.log_writer.log("Created data frame with null values", self.log_file)
+                self.log_writer.log(
+                    "Created data frame with null values", self.log_file
+                )
 
-            self.blob.upload_df_as_csv(
-                self.null_df,
-                self.files["null_values"],
-                self.files["null_values"],
-                self.container["io_files"],
-                self.log_file,
-            )
+                self.blob.upload_df_as_csv(
+                    self.null_df,
+                    self.files["null_values"],
+                    self.files["null_values"],
+                    "io_files",
+                    self.log_file,
+                )
 
             self.log_writer.start_log(
                 "exit", self.class_name, method_name, self.log_file
@@ -257,9 +247,7 @@ s
         """
         method_name = self.encode_target_cols.__name__
 
-        self.log_writer.start_log(
-            "start", self.class_name, method_name, self.log_file,
-        )
+        self.log_writer.start_log("start", self.class_name, method_name, self.log_file)
 
         try:
             data["class"] = data["class"].map({"p": 1, "e": 2})
@@ -270,14 +258,14 @@ s
             self.log_writer.log("Encoded target columns", self.log_file)
 
             self.log_writer.start_log(
-                "exit", self.class_name, method_name, self.log_file,
+                "exit", self.class_name, method_name, self.log_file
             )
 
             return data
 
         except Exception as e:
             self.log_writer.exception_log(
-                e, self.class_name, method_name, self.log_file,
+                e, self.class_name, method_name, self.log_file
             )
 
     def apply_standard_scaler(self, X):
@@ -293,9 +281,7 @@ s
         """
         method_name = self.apply_standard_scaler.__name__
 
-        self.log_writer.start_log(
-            "start", self.class_name, method_name, self.log_file,
-        )
+        self.log_writer.start_log("start", self.class_name, method_name, self.log_file)
 
         try:
             scalar = StandardScaler()
@@ -307,14 +293,14 @@ s
             )
 
             self.log_writer.start_log(
-                "exit", self.class_name, method_name, self.log_file,
+                "exit", self.class_name, method_name, self.log_file
             )
 
             return X_scaled
 
         except Exception as e:
             self.log_writer.exception_log(
-                e, self.class_name, method_name, self.log_file,
+                e, self.class_name, method_name, self.log_file
             )
 
     def impute_missing_values(self, data):
@@ -330,9 +316,7 @@ s
         """
         method_name = self.impute_missing_values.__name__
 
-        self.log_writer.start_log(
-            "start", self.class_name, method_name, self.log_file,
-        )
+        self.log_writer.start_log("start", self.class_name, method_name, self.log_file)
 
         try:
             self.data = data
@@ -358,14 +342,14 @@ s
             self.log_writer.log("Imputing missing values Successful", self.log_file)
 
             self.log_writer.start_log(
-                "exit", self.class_name, method_name, self.log_file,
+                "exit", self.class_name, method_name, self.log_file
             )
 
             return self.new_data
 
         except Exception as e:
             self.log_writer.exception_log(
-                e, self.class_name, method_name, self.log_file,
+                e, self.class_name, method_name, self.log_file
             )
 
     def get_columns_with_zero_std_deviation(self, data):
@@ -381,9 +365,7 @@ s
         """
         method_name = self.get_columns_with_zero_std_deviation.__name__
 
-        self.log_writer.start_log(
-            "start", self.class_name, method_name, self.log_file,
-        )
+        self.log_writer.start_log("start", self.class_name, method_name, self.log_file)
 
         try:
             self.columns = data.columns
@@ -397,7 +379,7 @@ s
             )
 
             self.log_writer.start_log(
-                "exit", self.class_name, method_name, self.log_file,
+                "exit", self.class_name, method_name, self.log_file
             )
 
             return self.col_drop
@@ -408,5 +390,5 @@ s
             )
 
             self.log_writer.exception_log(
-                e, self.class_name, method_name, self.log_file,
+                e, self.class_name, method_name, self.log_file
             )
