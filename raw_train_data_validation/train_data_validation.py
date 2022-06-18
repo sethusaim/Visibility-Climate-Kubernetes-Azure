@@ -103,7 +103,7 @@ class Raw_Train_Data_Validation:
         try:
             self.log_writer.start_log("start", self.class_name, method_name, "general")
 
-            regex = self.blob.read_text(self.files["regex"], "general")
+            regex = self.blob.read_text(self.files["regex"], "io_files", "general")
 
             self.log_writer.log(f"Got {regex} pattern", "general")
 
