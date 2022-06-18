@@ -26,13 +26,9 @@ class Raw_Train_Data_Validation:
 
         self.blob = Blob_Operation()
 
-        self.container = self.config["blob_container"]
-
         self.data_dir = self.config["data_dir"]
 
         self.files = self.config["files"]
-
-        self.train_log = self.config["log"]
 
     def values_from_schema(self):
         """
@@ -49,16 +45,11 @@ class Raw_Train_Data_Validation:
 
         try:
             self.log_writer.start_log(
-                "start",
-                self.class_name,
-                method_name,
-                self.train_log["values_from_schema"],
+                "start", self.class_name, method_name, "values_from_schema"
             )
 
             dic = self.blob.read_json(
-                self.files["train_schema"],
-                self.container["io_files"],
-                self.train_log["values_from_schema"],
+                self.files["train_schema"], "io_files", "values_from_schema"
             )
 
             LengthOfDateStampInFile = dic["LengthOfDateStampInFile"]
@@ -78,18 +69,15 @@ class Raw_Train_Data_Validation:
                 + "\n"
             )
 
-            self.log_writer.log(message, self.train_log["values_from_schema"])
+            self.log_writer.log(message, "values_from_schema")
 
             self.log_writer.start_log(
-                "exit",
-                self.class_name,
-                method_name,
-                self.train_log["values_from_schema"],
+                "exit", self.class_name, method_name, "values_from_schema"
             )
 
         except Exception as e:
             self.log_writer.exception_log(
-                e, self.class_name, method_name, self.train_log["values_from_schema"],
+                e, self.class_name, method_name, "values_from_schema"
             )
 
         return (
@@ -113,28 +101,18 @@ class Raw_Train_Data_Validation:
         method_name = self.get_regex_pattern.__name__
 
         try:
-            self.log_writer.start_log(
-                "start", self.class_name, method_name, self.train_log["general"],
-            )
+            self.log_writer.start_log("start", self.class_name, method_name, "general")
 
-            regex = self.blob.read_text(
-                self.files["regex"],
-                self.container["io_files"],
-                self.train_log["general"],
-            )
+            regex = self.blob.read_text(self.files["regex"], "general")
 
-            self.log_writer.log(f"Got {regex} pattern", self.train_log["general"])
+            self.log_writer.log(f"Got {regex} pattern", "general")
 
-            self.log_writer.start_log(
-                "exit", self.class_name, method_name, self.train_log["general"],
-            )
+            self.log_writer.start_log("exit", self.class_name, method_name, "general")
 
             return regex
 
         except Exception as e:
-            self.log_writer.exception_log(
-                e, self.class_name, method_name, self.train_log["general"],
-            )
+            self.log_writer.exception_log(e, self.class_name, method_name, "general")
 
     def validate_raw_fname(
         self, regex, LengthOfDateStampInFile, LengthOfTimeStampInFile
@@ -152,39 +130,35 @@ class Raw_Train_Data_Validation:
         method_name = self.validate_raw_fname.__name__
 
         self.log_writer.start_log(
-            "start", self.class_name, method_name, self.train_log["name_validation"],
+            "start", self.class_name, method_name, "name_validation"
         )
 
         try:
             onlyfiles = self.blob.get_files_from_folder(
-                self.data_dir["raw_train_batch"],
-                self.container["raw_train_data"],
-                self.train_log["name_validation"],
+                self.data_dir["raw_train_batch"], "raw_train_data", "name_validation"
             )
 
             train_batch_files = [f.split("/")[1] for f in onlyfiles]
 
             self.log_writer.log(
-                "Got training files with absolute file name",
-                self.train_log["name_validation"],
+                "Got training files with absolute file name", "name_validation"
             )
 
             for fname in train_batch_files:
                 raw_data_train_fname = self.utils.get_train_fname(
-                    "raw_train_batch", fname, self.train_log["name_validation"]
+                    "raw_train_batch", fname, "name_validation"
                 )
 
                 good_data_train_fname = self.utils.get_train_fname(
-                    "train_good", fname, self.train_log["name_validation"]
+                    "train_good", fname, "name_validation"
                 )
 
                 bad_data_train_fname = self.utils.get_train_fname(
-                    "train_bad", fname, self.train_log["name_validation"]
+                    "train_bad", fname, "name_validation"
                 )
 
                 self.log_writer.log(
-                    "Created raw,good and bad data file name",
-                    self.train_log["name_validation"],
+                    "Created raw,good and bad data file name", "name_validation"
                 )
 
                 if match(regex, fname):
@@ -196,45 +170,46 @@ class Raw_Train_Data_Validation:
                         if len(splitAtDot[2]) == LengthOfTimeStampInFile:
                             self.blob.copy_data(
                                 raw_data_train_fname,
-                                self.container["raw_train_data"],
+                                "raw_train_data",
                                 good_data_train_fname,
-                                self.container["train_data"],
-                                self.train_log["name_validation"],
+                                "train_data",
+                                "name_validation",
                             )
 
                         else:
                             self.blob.copy_data(
                                 raw_data_train_fname,
-                                self.container["raw_train_data"],
+                                "raw_train_data",
                                 bad_data_train_fname,
-                                self.container["train_data"],
-                                self.train_log["name_validation"],
+                                "train_data",
+                                "name_validation",
                             )
 
                     else:
                         self.blob.copy_data(
                             raw_data_train_fname,
-                            self.container["raw_train_data"],
+                            "raw_train_data",
                             bad_data_train_fname,
-                            self.container["train_data"],
-                            self.train_log["name_validation"],
+                            "train_data",
+                            "name_validation",
                         )
+
                 else:
                     self.blob.copy_data(
                         raw_data_train_fname,
-                        self.container["raw_train_data"],
+                        "raw_train_data",
                         bad_data_train_fname,
-                        self.container["train_data"],
-                        self.train_log["name_validation"],
+                        "train_data",
+                        "name_validation",
                     )
 
             self.log_writer.start_log(
-                "exit", self.class_name, method_name, self.train_log["name_validation"],
+                "exit", self.class_name, method_name, "name_validation",
             )
 
         except Exception as e:
             self.log_writer.exception_log(
-                e, self.class_name, method_name, self.train_log["name_validation"],
+                e, self.class_name, method_name, "name_validation",
             )
 
     def validate_col_length(self, NumberofColumns):
@@ -251,14 +226,12 @@ class Raw_Train_Data_Validation:
         method_name = self.validate_col_length.__name__
 
         self.log_writer.start_log(
-            "start", self.class_name, method_name, self.train_log["col_validation"],
+            "start", self.class_name, method_name, "col_validation"
         )
 
         try:
             lst = self.blob.read_csv_from_folder(
-                self.data_dir["train_good"],
-                self.container["train_data"],
-                self.train_log["col_validation"],
+                self.data_dir["train_good"], "train_data", "col_validation"
             )
 
             for _, f in enumerate(lst):
@@ -275,20 +248,16 @@ class Raw_Train_Data_Validation:
                     dest_f = self.data_dir["train_bad"] + "/" + abs_f
 
                     self.blob.move_data(
-                        file,
-                        self.container["train_data"],
-                        dest_f,
-                        self.container["train_data"],
-                        self.train_log["col_validation"],
+                        file, "train_data", dest_f, "train_data", "col_validation"
                     )
 
             self.log_writer.start_log(
-                "exit", self.class_name, method_name, self.train_log["col_validation"],
+                "exit", self.class_name, method_name, "col_validation",
             )
 
         except Exception as e:
             self.log_writer.exception_log(
-                e, self.class_name, method_name, self.train_log["col_validation"],
+                e, self.class_name, method_name, "col_validation",
             )
 
     def validate_missing_values_in_col(self):
@@ -305,17 +274,12 @@ class Raw_Train_Data_Validation:
         method_name = self.validate_missing_values_in_col.__name__
 
         self.log_writer.start_log(
-            "start",
-            self.class_name,
-            method_name,
-            self.train_log["missing_values_in_col"],
+            "start", self.class_name, method_name, "missing_values_in_col"
         )
 
         try:
             lst = self.blob.read_csv_from_folder(
-                self.data_dir["train_good"],
-                self.container["train_data"],
-                self.train_log["missing_values_in_col"],
+                self.data_dir["train_good"], "train_data", "missing_values_in_col"
             )
 
             for _, f in enumerate(lst):
@@ -335,10 +299,10 @@ class Raw_Train_Data_Validation:
 
                         self.blob.move_data(
                             file,
-                            self.container["train_data"],
+                            "train_data",
                             dest_f,
-                            self.container["train_data"],
-                            self.train_log["missing_values_in_col"],
+                            "train_data",
+                            "missing_values_in_col",
                         )
 
                         break
@@ -347,27 +311,17 @@ class Raw_Train_Data_Validation:
                     dest_f = self.data_dir["train_good"] + "/" + abs_f
 
                     self.blob.upload_df_as_csv(
-                        df,
-                        abs_f,
-                        dest_f,
-                        self.container["train_data"],
-                        self.train_log["missing_values_in_col"],
+                        df, abs_f, dest_f, "train_data", "missing_values_in_col"
                     )
 
                 else:
                     pass
 
                 self.log_writer.start_log(
-                    "exit",
-                    self.class_name,
-                    method_name,
-                    self.train_log["missing_values_in_col"],
+                    "exit", self.class_name, method_name, "missing_values_in_col",
                 )
 
         except Exception as e:
             self.log_writer.exception_log(
-                e,
-                self.class_name,
-                method_name,
-                self.train_log["missing_values_in_col"],
+                e, self.class_name, method_name, "missing_values_in_col",
             )

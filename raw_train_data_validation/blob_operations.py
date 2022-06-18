@@ -15,6 +15,8 @@ class Blob_Operation:
 
         self.config = read_params()
 
+        self.container = self.config["blob_container"]
+
         self.connection_string = environ["AZURE_CONN_STR"]
 
         self.log_writer = App_Logger()
@@ -26,7 +28,8 @@ class Blob_Operation:
 
         try:
             container_client = ContainerClient.from_connection_string(
-                conn_str=self.connection_string, container_name=container
+                conn_str=self.connection_string,
+                container_name=self.container[container],
             )
 
             self.log_writer.log("Got container client from connection string", log_file)
