@@ -17,13 +17,9 @@ class DB_Operation_Train:
 
         self.class_name = self.__class__.__name__
 
-        self.container = self.config["blob_container"]
-
         self.files = self.config["files"]
 
         self.data_dir = self.config["data_dir"]
-
-        self.train_log = self.config["log"]
 
         self.blob = Blob_Operation()
 
@@ -44,40 +40,28 @@ class DB_Operation_Train:
         """
         method_name = self.insert_good_data_as_record.__name__
 
-        self.log_writer.start_log(
-            "start", self.class_name, method_name, self.train_log["db_insert"]
-        )
+        self.log_writer.start_log("start", self.class_name, method_name, "db_insert")
 
         try:
             lst = self.blob.read_csv_from_folder(
-                self.data_dir["train_good"],
-                self.container["train_data"],
-                self.train_log["db_insert"],
+                self.data_dir["train_good"], "train_data", "db_insert"
             )
 
             for _, f in enumerate(lst):
                 df = f[0]
 
                 self.mongo.insert_dataframe_as_record(
-                    df,
-                    good_data_db_name,
-                    good_data_collection_name,
-                    self.train_log["db_insert"],
+                    df, good_data_db_name, good_data_collection_name, "db_insert"
                 )
 
                 self.log_writer.log(
-                    "Inserted dataframe as collection record in mongodb",
-                    self.train_log["db_insert"],
+                    "Inserted dataframe as collection record in mongodb", "db_insert"
                 )
 
-            self.log_writer.start_log(
-                "exit", self.class_name, method_name, self.train_log["db_insert"],
-            )
+            self.log_writer.start_log("exit", self.class_name, method_name, "db_insert")
 
         except Exception as e:
-            self.log_writer.exception_log(
-                e, self.class_name, method_name, self.train_log["db_insert"],
-            )
+            self.log_writer.exception_log(e, self.class_name, method_name, "db_insert")
 
     def export_collection_to_csv(self, good_data_db_name, good_data_collection_name):
         """
@@ -92,34 +76,28 @@ class DB_Operation_Train:
         """
         method_name = self.export_collection_to_csv.__name__
 
-        self.log_writer.start_log(
-            "start", self.class_name, method_name, self.train_log["export_csv"]
-        )
+        self.log_writer.start_log("start", self.class_name, method_name, "export_csv")
 
         try:
             df = self.mongo.get_collection_as_dataframe(
-                good_data_db_name,
-                good_data_collection_name,
-                self.train_log["export_csv"],
+                good_data_db_name, good_data_collection_name, "export_csv",
             )
 
             self.blob.upload_df_as_csv(
                 df,
                 self.files["train_export"],
                 self.files["train_export"],
-                self.container["feature_store"],
-                self.train_log["export_csv"],
+                "feature_store",
+                "export_csv",
             )
 
-            self.log_writer.log(
-                "Exported dataframe to csv file", self.train_log["export_csv"]
-            )
+            self.log_writer.log("Exported dataframe to csv file", "export_csv")
 
             self.log_writer.start_log(
-                "exit", self.class_name, method_name, self.train_log["export_csv"],
+                "exit", self.class_name, method_name, "export_csv",
             )
 
         except Exception as e:
             self.log_writer.exception_log(
-                e, self.class_name, method_name, self.train_log["export_csv"],
+                e, self.class_name, method_name, "export_csv",
             )

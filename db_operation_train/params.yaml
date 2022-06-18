@@ -2,7 +2,7 @@ blob_container:
   train_data: climate-train-data
   logs: climate-logs
   feature_store: climate-feature-store
-  
+
 files:
   train_export: train_input_file.csv
 
