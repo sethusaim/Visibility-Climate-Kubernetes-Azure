@@ -20,8 +20,6 @@ class Load_Prod_Model:
 
         self.container = self.config["blob_container"]
 
-        self.load_prod_model_log = self.config["log"]["load_prod_model"]
-
         self.mlflow_config = self.config["mlflow_config"]
 
         self.blob = Blob_Operation()
@@ -30,7 +28,7 @@ class Load_Prod_Model:
 
         self.utils = Main_Utils()
 
-        self.mlflow_op = MLFlow_Operation(self.load_prod_model_log)
+        self.mlflow_op = MLFlow_Operation("load_prod_model")
 
     def load_production_model(self):
         """
@@ -46,13 +44,11 @@ class Load_Prod_Model:
         method_name = self.load_production_model.__name__
 
         self.log_writer.start_log(
-            "start", self.class_name, method_name, self.load_prod_model_log
+            "start", self.class_name, method_name, "load_prod_model"
         )
 
         try:
-            self.utils.create_prod_and_stag_dirs(
-                self.container["model"], self.load_prod_model_log
-            )
+            self.utils.create_prod_and_stag_dirs("model", "load_prod_model")
 
             self.mlflow_op.set_mlflow_tracking_uri()
 
@@ -63,9 +59,7 @@ class Load_Prod_Model:
             runs = self.mlflow_op.get_runs_from_mlflow(exp.experiment_id)
 
             feat_fnames = self.blob.get_files_from_folder(
-                self.config["feature_pattern"],
-                self.container["feature_store"],
-                self.load_prod_model_log,
+                self.config["feature_pattern"], "feature_store", "load_prod_model",
             )
 
             num_clusters = len(feat_fnames)
@@ -89,18 +83,18 @@ class Load_Prod_Model:
             ]
 
             self.log_writer.log(
-                "Created cols for all registered model", self.load_prod_model_log
+                "Created cols for all registered model", "load_prod_model"
             )
 
             runs_cols = runs.filter(cols).max().sort_values(ascending=False)
 
             self.log_writer.log(
-                "Sorted the runs cols in descending order", self.load_prod_model_log
+                "Sorted the runs cols in descending order", "load_prod_model"
             )
 
             metrics_dict = runs_cols.to_dict()
 
-            self.log_writer.log("Converted runs cols to dict", self.load_prod_model_log)
+            self.log_writer.log("Converted runs cols to dict", "load_prod_model")
 
             """ 
             Eg-output: For 3 clusters, 
@@ -140,7 +134,7 @@ run_number  metrics.XGBoost0-best_score metrics.RandomForest1-best_score metrics
 
             self.log_writer.log(
                 f"Got top model names based on the metrics of clusters",
-                self.load_prod_model_log,
+                "load_prod_model",
             )
 
             ## best_metrics will store the value of metrics, but we want the names of the models,
@@ -152,7 +146,7 @@ run_number  metrics.XGBoost0-best_score metrics.RandomForest1-best_score metrics
 
             top_mn_lst = [mn.split(".")[1].split("-")[0] for mn in best_metrics_names]
 
-            self.log_writer.log(f"Got the top model names", self.load_prod_model_log)
+            self.log_writer.log(f"Got the top model names", "load_prod_model")
 
             results = self.mlflow_op.search_mlflow_models("DESC")
 
@@ -165,11 +159,7 @@ run_number  metrics.XGBoost0-best_score metrics.RandomForest1-best_score metrics
                 for mv in res.latest_versions:
                     if mv.name in top_mn_lst:
                         self.mlflow_op.transition_mlflow_model(
-                            mv.version,
-                            "Production",
-                            mv.name,
-                            self.container["model"],
-                            self.container["model"],
+                            mv.version, "Production", mv.name, "model", "model",
                         )
 
                     ## In the registered models, even kmeans model is present, so during Prediction,
@@ -177,34 +167,26 @@ run_number  metrics.XGBoost0-best_score metrics.RandomForest1-best_score metrics
 
                     elif mv.name == "KMeans":
                         self.mlflow_op.transition_mlflow_model(
-                            mv.version,
-                            "Production",
-                            mv.name,
-                            self.container["model"],
-                            self.container["model"],
+                            mv.version, "Production", mv.name, "model", "model",
                         )
 
                     else:
                         self.mlflow_op.transition_mlflow_model(
-                            mv.version,
-                            "Staging",
-                            mv.name,
-                            self.container["model"],
-                            self.container["model"],
+                            mv.version, "Staging", mv.name, "model", "model",
                         )
 
             self.log_writer.log(
                 "Transitioning of models based on scores successfully done",
-                self.load_prod_model_log,
+                "load_prod_model",
             )
 
             self.log_writer.start_log(
-                "exit", self.class_name, method_name, self.load_prod_model_log,
+                "exit", self.class_name, method_name, "load_prod_model",
             )
 
         except Exception as e:
             self.log_writer.exception_log(
-                e, self.class_name, method_name, self.load_prod_model_log,
+                e, self.class_name, method_name, "load_prod_model",
             )
 
 

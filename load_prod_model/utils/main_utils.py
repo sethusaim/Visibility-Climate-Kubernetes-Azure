@@ -23,11 +23,7 @@ class Main_Utils:
 
         self.config = read_params()
 
-        self.container = self.config["blob_container"]
-
         self.models_dir = self.config["models_dir"]
-
-        self.log_file = self.config["log"]["upload"]
 
         self.log_dir = self.config["log_dir"]
 
@@ -48,38 +44,28 @@ class Main_Utils:
         """
         method_name = self.upload_logs.__name__
 
-        self.log_writer.start_log("start", self.class_name, method_name, self.log_file)
+        self.log_writer.start_log("start", self.class_name, method_name, "upload")
 
         try:
             lst = listdir(self.log_dir)
 
-            self.log_writer.log(
-                "Got list of logs from train_logs folder", self.log_file
-            )
+            self.log_writer.log("Got list of logs from train_logs folder", "upload")
 
             for f in lst:
                 local_f = join(self.log_dir, f)
 
                 dest_f = self.log_dir + "/" + f
 
-                self.s3.upload_file(
-                    local_f, dest_f, self.container["logs"], self.log_file
-                )
+                self.s3.upload_file(local_f, dest_f, "logs", "upload")
 
-            self.log_writer.log(
-                f"Uploaded logs to {self.container['logs']}", self.log_file
-            )
+            self.log_writer.log("Uploaded logs to logs container", "upload")
 
-            self.log_writer.start_log(
-                "exit", self.class_name, method_name, self.log_file
-            )
+            self.log_writer.start_log("exit", self.class_name, method_name, "upload")
 
             rmtree(self.log_dir)
 
         except Exception as e:
-            self.log_writer.exception_log(
-                e, self.class_name, method_name, self.log_file
-            )
+            self.log_writer.exception_log(e, self.class_name, method_name, "upload")
 
     def get_model_file(self, key, model_name, log_file):
         """
