@@ -1,8 +1,5 @@
-from os import listdir
-from os.path import join
-from shutil import rmtree
-
 from blob_operations import Blob_Operation
+from pandas import DataFrame
 
 from utils.logger import App_Logger
 from utils.read_params import read_params
@@ -23,13 +20,11 @@ class Main_Utils:
 
         self.config = read_params()
 
-        self.container = self.config["blob_container"]
-
         self.model_dir = self.config["model_dir"]
 
         self.log_dir = self.config["log_dir"]
 
-        self.log_file = self.config["log"]["upload"]
+        self.files = self.config["files"]
 
         self.class_name = self.__class__.__name__
 
@@ -46,38 +41,17 @@ class Main_Utils:
         """
         method_name = self.upload_logs.__name__
 
-        self.log_writer.start_log("start", self.class_name, method_name, self.log_file)
+        self.log_writer.start_log("start", self.class_name, method_name, "upload")
 
         try:
-            lst = listdir(self.log_dir)
+            self.blob.upload_folder(self.log_dir, "logs", "upload")
 
-            self.log_writer.log(
-                f"Got list of logs from {self.log_dir} folder", self.log_file
-            )
+            self.log_writer.log("Uploaded logs to logs container", "upload")
 
-            for f in lst:
-                local_f = join(self.log_dir, f)
-
-                dest_f = self.log_dir + "/" + f
-
-                self.blob.upload_file(
-                    local_f, dest_f, self.container["logs"], self.log_file
-                )
-
-            self.log_writer.log(
-                f"Uploaded logs to {self.container['logs']}", self.log_file
-            )
-
-            self.log_writer.start_log(
-                "exit", self.class_name, method_name, self.log_file
-            )
-
-            rmtree(self.log_dir)
+            self.log_writer.start_log("exit", self.class_name, method_name, "upload")
 
         except Exception as e:
-            self.log_writer.exception_log(
-                e, self.class_name, method_name, self.log_file
-            )
+            self.log_writer.exception_log(e, self.class_name, method_name, "upload")
 
     def find_correct_model_file(self, cluster_number, container, log_file):
         """
@@ -117,6 +91,146 @@ class Main_Utils:
             self.log_writer.start_log("exit", self.class_name, method_name, log_file)
 
             return model_name
+
+        except Exception as e:
+            self.log_writer.exception_log(e, self.class_name, method_name, log_file)
+
+    def get_pred_input_file(self, log_file):
+        """
+        Method Name :   get_pred_input_file
+        Description :   This method gets the prediction input file from blob container for prediction
+        
+        Output      :   Prediction input csv file is returned
+        On Failure  :   Write an exception log and then raise an exception
+        
+        Version     :   1.2
+        Revisions   :   moved setup to cloud
+        """
+        method_name = self.get_pred_input_file.__name__
+
+        self.log_writer.start_log("start", self.class_name, method_name, log_file)
+
+        try:
+            data = self.blob.read_csv(
+                self.files["pred_input_file_preprocess"], "feature_store", log_file
+            )
+
+            self.log_writer.log("Got the prediction input file", log_file)
+
+            self.log_writer.start_log("exit", self.class_name, method_name, log_file)
+
+            return data
+
+        except Exception as e:
+            self.log_writer.exception_log(e, self.class_name, method_name, log_file)
+
+    def get_unique_clusters(self, log_file):
+        """
+        Method Name :   get_unique_clusters
+        Description :   This method gets the unique clusters using kmeans model
+        
+        Output      :   The number of unique cluster and data is returned
+        On Failure  :   Write an exception log and then raise an exception
+        
+        Version     :   1.2
+        Revisions   :   moved setup to cloud
+        """
+        method_name = self.get_unique_clusters.__name__
+
+        self.log_writer.start_log("start", self.class_name, method_name, log_file)
+
+        try:
+            data = self.get_pred_input_file(log_file)
+
+            self.log_writer.log("Got the prediction input csv file", log_file)
+
+            kmeans_model = self.blob.load_model("KMeans", "model", log_file, "prod")
+
+            self.log_writer.log("Got kmeans model", log_file)
+
+            clusters = kmeans_model.predict(data.drop(["Wafer"], axis=1))
+
+            self.log_writer.log("*Used kmeans model to predict clusters", log_file)
+
+            data["clusters"] = clusters
+
+            unique_clusters = data["clusters"].unique()
+
+            self.log_writer.log(
+                "GOt unique clusters from the prediction data", log_file
+            )
+
+            self.log_writer.start_log("exit", self.class_name, method_name, log_file)
+
+            return unique_clusters
+
+        except Exception as e:
+            self.log_writer.exception_log(e, self.class_name, method_name, log_file)
+
+    def get_predictions(self, idx, log_file):
+        method_name = self.get_predictions.__name__
+
+        self.log_writer.start_log("start", self.class_name, method_name, log_file)
+
+        try:
+            data = self.get_pred_input_file(log_file)
+
+            cluster_data = data[data["clusters"] == idx]
+
+            wafer_names = list(cluster_data["Wafer"])
+
+            cluster_data = data.drop(labels=["Wafer"], axis=1)
+
+            cluster_data = cluster_data.drop(["clusters"], axis=1)
+
+            self.log_writer.log("Got cluster data", log_file)
+
+            model_name = self.find_correct_model_file(idx, "model", log_file)
+
+            self.log_writer.log(
+                f"Found the correct model file based on {idx} cluster number", log_file
+            )
+
+            model = self.blob.load_model(model_name, "model", log_file, "prod")
+
+            result = list(model.predict(cluster_data))
+
+            self.log_writer.log(
+                "Got the list of predictions for the cluster data", log_file
+            )
+
+            result = DataFrame(
+                list(zip(wafer_names, result)), columns=["Wafer", "Prediction"]
+            )
+
+            self.log_writer.log("Created a dataframe of results", log_file)
+
+            self.log_writer.start_log("exit", self.class_name, method_name, log_file)
+
+            return result, wafer_names
+
+        except Exception as e:
+            self.log_writer.exception_log(e, self.class_name, method_name, log_file)
+
+    def upload_results(self, result_df, log_file):
+        method_name = self.upload_results.__name__
+
+        self.log_writer.start_log("start", self.class_name, method_name, log_file)
+
+        try:
+            self.blob.upload_df_as_csv(
+                result_df,
+                self.files["pred_output"],
+                self.files["pred_output"],
+                "io_files",
+                log_file,
+            )
+
+            self.log_writer.log(
+                "Uploaded results as csv file to blob container", log_file
+            )
+
+            self.log_writer.start_log("exit", self.class_name, method_name, log_file)
 
         except Exception as e:
             self.log_writer.exception_log(e, self.class_name, method_name, log_file)
