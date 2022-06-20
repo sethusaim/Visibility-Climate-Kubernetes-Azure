@@ -3,8 +3,7 @@ blob_container:
   model: climate-model
   logs: climate-logs
   feature_store: climate-feature-store
-  component: climate-kubeflow-components
-
+  
 files:
   features: climate_train_features.csv
   targets: climate_train_targets.csv

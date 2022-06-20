@@ -26,6 +26,10 @@ class Blob_Operation:
 
         self.container = self.config["blob_container"]
 
+        self.save_format = self.config["model_save_format"]
+
+        self.model_dir = self.config["model_dir"]
+
         self.log_writer = App_Logger()
 
     def get_container_client(self, container, log_file):
@@ -223,7 +227,7 @@ class Blob_Operation:
         except Exception as e:
             self.log_writer.exception_log(e, self.class_name, method_name, log_file)
 
-    def save_model(self, model, model_dir, save_format, container, log_file, idx=None):
+    def save_model(self, model, model_dir, container, log_file, idx=None):
         """
         Method Name :   save_model
         Description :   This method saves the model to a blob container, in particular folder and save format
@@ -242,9 +246,9 @@ class Blob_Operation:
             model_name = model.__class__.__name__
 
             func = (
-                lambda: model_name + save_format
+                lambda: model_name + self.save_format
                 if model_name == "KMeans"
-                else model_name + str(idx) + save_format
+                else model_name + str(idx) + self.save_format
             )
 
             model_file = func()
@@ -254,8 +258,8 @@ class Blob_Operation:
             )
 
             dir_func = (
-                lambda: model_dir + "/" + model_file
-                if model_dir is not None
+                lambda: self.model_dir[model_dir] + "/" + model_file
+                if self.model_dir[model_dir] is not None
                 else model_file
             )
 

@@ -20,12 +20,6 @@ class KMeans_Clustering:
 
         self.config = read_params()
 
-        self.container = self.config["blob_container"]
-
-        self.random_state = self.config["base"]["random_state"]
-
-        self.model_dir = self.config["model_dir"]
-
         self.kmeans_params = self.config["KMeans"]
 
         self.knee_params = self.config["knee"]
@@ -121,13 +115,7 @@ class KMeans_Clustering:
 
             self.y_kmeans = self.kmeans.fit_predict(data)
 
-            self.blob.save_model(
-                self.kmeans,
-                self.model_dir["trained"],
-                self.model_save_format,
-                "model",
-                self.log_file,
-            )
+            self.blob.save_model(self.kmeans, "trained", "model", self.log_file)
 
             data["Cluster"] = self.y_kmeans
 

@@ -1,8 +1,6 @@
-from blob_operations import Blob_Operation
 from clustering import KMeans_Clustering
 from utils.logger import App_Logger
 from utils.main_utils import Main_Utils
-from utils.read_params import read_params
 
 
 class Run:
@@ -14,17 +12,11 @@ class Run:
     """
 
     def __init__(self):
-        self.config = read_params()
-
-        self.files = self.config["files"]
-
         self.utils = Main_Utils()
 
         self.log_writer = App_Logger()
 
         self.kmeans_op = KMeans_Clustering("clustering")
-
-        self.blob = Blob_Operation()
 
         self.class_name = self.__class__.__name__
 
@@ -44,16 +36,14 @@ class Run:
         self.log_writer.start_log("start", self.class_name, method_name, "clustering")
 
         try:
-            X = self.blob.read_csv(
-                self.files["features"], "feature_store", "clustering"
-            )
+            X = self.utils.get_training_data("features", "clustering")
 
             self.log_writer.log(
                 "Read the features file for training from feature store container",
                 "clustering",
             )
 
-            Y = self.blob.read_csv(self.files["targets"], "feature_store", "clustering")
+            Y = self.utils.get_training_data("targets", "clustering")
 
             self.log_writer.log(
                 "Read the labels for training from feature store container",
@@ -79,28 +69,12 @@ class Run:
 
                 cluster_label = cluster_data["Labels"]
 
-                cluster_feats_fname = self.utils.get_cluster_fname(
-                    self.files["features"], i, "clustering"
+                self.utils.upload_cluster_data(
+                    i, cluster_features, "clustering", key="features"
                 )
 
-                cluster_label_fname = self.utils.get_cluster_fname(
-                    self.files["targets"], i, "clustering"
-                )
-
-                self.blob.upload_df_as_csv(
-                    cluster_features,
-                    cluster_feats_fname,
-                    cluster_feats_fname,
-                    "feature_store",
-                    "clustering",
-                )
-
-                self.blob.upload_df_as_csv(
-                    cluster_label,
-                    cluster_label_fname,
-                    cluster_label_fname,
-                    "feature_store",
-                    "clustering",
+                self.utils.upload_cluster_data(
+                    i, cluster_label, "clustering", key="targets"
                 )
 
             self.log_writer.start_log(
