@@ -1,5 +1,4 @@
-from numpy import unique
-from sklearn.metrics import accuracy_score, roc_auc_score
+from sklearn.metrics import r2_score
 from sklearn.model_selection import GridSearchCV
 
 from utils.logger import App_Logger
@@ -48,19 +47,9 @@ class Model_Utils:
                 f"Used {model_name} model to get predictions on test data", log_file
             )
 
-            if len(unique(test_y)) == 1:
-                model_score = accuracy_score(test_y, preds)
+            model_score = r2_score(test_y, preds)
 
-                self.log_writer.log(
-                    "Accuracy for {model_name} is {model_score}", log_file
-                )
-
-            else:
-                model_score = roc_auc_score(test_y, preds)
-
-                self.log_writer.log(
-                    f"AUC score for {model_name} is {model_score}", log_file
-                )
+            self.log_writer.log(f"R2 score for {model_name} is {model_score}", log_file)
 
             self.log_writer.start_log("exit", self.class_name, method_name, log_file)
 

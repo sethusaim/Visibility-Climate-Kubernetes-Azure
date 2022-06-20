@@ -1,8 +1,11 @@
 from io import StringIO
-from os import environ, remove
+from os import environ, listdir, remove
+from os.path import join
 from pickle import dump, loads
+from shutil import rmtree
 
 from azure.storage.blob import BlobServiceClient, ContainerClient
+from pandas import read_csv
 
 from utils.logger import App_Logger
 from utils.read_params import read_params
@@ -22,6 +25,10 @@ class Blob_Operation:
         self.config = read_params()
 
         self.container = self.config["blob_container"]
+
+        self.save_format = self.config["save_format"]
+
+        self.model_dir = self.config["model_dir"]
 
         self.connection_string = environ["AZURE_CONN_STR"]
 
@@ -334,7 +341,7 @@ class Blob_Operation:
         except Exception as e:
             self.log_writer.exception_log(e, self.class_name, method_name, log_file)
 
-    def load_model(self, model_name, container, save_format, log_file, model_dir=None):
+    def load_model(self, model_name, container, log_file, model_dir=None):
         """
         Method Name :   load_model
         Description :   This method loads the model from container with save format, model_dir if present 
@@ -351,9 +358,9 @@ class Blob_Operation:
 
         try:
             func = (
-                lambda: model_name + save_format
+                lambda: model_name + self.save_format
                 if model_dir is None
-                else model_dir + "/" + model_name + save_format
+                else self.model_dir[model_dir] + "/" + model_name + self.save_format
             )
 
             model_file = func()
@@ -377,7 +384,7 @@ class Blob_Operation:
         except Exception as e:
             self.log_writer.exception_log(e, self.class_name, method_name, log_file)
 
-    def save_model(self, model, model_dir, container, save_format, log_file, idx=None):
+    def save_model(self, model, container, log_file, model_dir=None, idx=None):
         """
         Method Name :   save_model
         Description :   This method saves the model in the model_dir with save_format in container with idx is needed
@@ -396,9 +403,9 @@ class Blob_Operation:
             model_name = model.__class__.__name__
 
             func = (
-                lambda: model_name + save_format
+                lambda: model_name + self.save_format
                 if model_name == "KMeans"
-                else model_name + str(idx) + save_format
+                else model_name + str(idx) + self.save_format
             )
 
             model_file = func()
@@ -408,8 +415,8 @@ class Blob_Operation:
             )
 
             dir_func = (
-                lambda: model_dir + "/" + model_file
-                if model_dir is not None
+                lambda: self.model_dir[model_dir]
+                if self.model_dir[model_dir] is not None
                 else model_file
             )
 
@@ -428,6 +435,83 @@ class Blob_Operation:
             self.upload_file(model_file, container_model_file, container, log_file)
 
             self.log_writer.start_log("exit", self.class_name, method_name, log_file)
+
+        except Exception as e:
+            self.log_writer.exception_log(e, self.class_name, method_name, log_file)
+
+    def upload_folder(self, folder, container, log_file, delete=True):
+        """
+        Method Name :   upload_folder
+        Description :   This method uploads the given folder to container
+        
+        Output      :   The folder is uploaded to container
+        On Failure  :   Write an exception log and then raise an exception
+        
+        Version     :   1.2
+        Revisions   :   moved setup to cloud
+        """
+        method_name = self.upload_folder.__name__
+
+        self.log_writer.start_log("start", self.class_name, method_name, log_file)
+
+        try:
+            lst = listdir(folder)
+
+            self.log_writer.log(f"Got list of files from the {folder} folder", log_file)
+
+            self.log_writer.log(
+                f"Uploading files from {folder} folder to container", log_file
+            )
+
+            for f in lst:
+                local_f = join(folder, f)
+
+                dest_f = folder + "/" + f
+
+                self.upload_file(local_f, dest_f, container, log_file)
+
+            if delete is True:
+                rmtree(folder)
+
+            else:
+                pass
+
+            self.log_writer.log(f"Uploaded {folder} folder to container", log_file)
+
+            self.log_writer.start_log("exit", self.class_name, method_name, log_file)
+
+        except Exception as e:
+            self.log_writer.exception_log(e, self.class_name, method_name, log_file)
+
+    def read_csv(self, fname, container, log_file):
+        """
+        Method Name :   read_csv
+        Description :   This method reads the csv file from container
+        
+        Output      :   The csv file is read from the container and returned as dataframe
+        On Failure  :   Write an exception log and then raise an exception
+        
+        Version     :   1.2
+        Revisions   :   moved setup to cloud
+        """
+        method_name = self.read_csv.__name__
+
+        self.log_writer.start_log("start", self.class_name, method_name, log_file)
+
+        try:
+            csv_obj = self.get_object(fname, container, log_file)
+
+            content = self.read_object(csv_obj, log_file, make_readable=True)
+
+            df = read_csv(content)
+
+            self.log_writer.log(
+                f"Read {fname} csv file from {container} container", log_file
+            )
+
+            self.log_writer.start_log("exit", self.class_name, method_name, log_file)
+
+            return df
 
         except Exception as e:
             self.log_writer.exception_log(e, self.class_name, method_name, log_file)

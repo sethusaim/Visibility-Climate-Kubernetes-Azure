@@ -2,8 +2,6 @@ base:
   random_state: 42
   test_size: 0.33
 
-target_col: Output
-
 blob_container:
   io_files: climate-io-files
   model: climate-model

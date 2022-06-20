@@ -1,6 +1,7 @@
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import train_test_split
-from xgboost import XGBClassifier
+from sklearn.tree import DecisionTreeRegressor
+from xgboost import XGBRegressor
 
 from blob_operations import Blob_Operation
 from mlflow_operations import MLFlow_Operation
@@ -26,12 +27,6 @@ class Model_Finder:
 
         self.split_kwargs = self.config["base"]
 
-        self.model_dir = self.config["models_dir"]
-
-        self.container = self.config["blob_container"]
-
-        self.save_format = self.config["save_format"]
-
         self.mlflow_op = MLFlow_Operation(self.log_file)
 
         self.model_utils = Model_Utils()
@@ -40,16 +35,16 @@ class Model_Finder:
 
         self.blob = Blob_Operation()
 
-        self.rf_model = RandomForestClassifier()
+        self.rf_model = RandomForestRegressor()
 
-        self.xgb_model = XGBClassifier(
-            objective="binary:logistic", eval_metric="logloss"
-        )
+        self.xgb_model = XGBRegressor()
+
+        self.dt_model = DecisionTreeRegressor()
 
     def get_rf_model(self, train_x, train_y):
         """
         Method Name :   get_rf_model
-        Description :   get the parameters for Random Forest Algorithm which give the best accuracy.
+        Description :   get the parameters for Random Forest Algorithm which give the least r2 score
                         Use Hyper Parameter Tuning.
         
         Output      :   The model with the best parameters
@@ -102,7 +97,7 @@ class Model_Finder:
     def get_xgboost_model(self, train_x, train_y):
         """
         Method Name :   get_xgboost_model
-        Description :   get the parameters for XGBoost Algorithm which give the best accuracy.
+        Description :   get the parameters for XGBoost Algorithm which give the least r2 score
                         Use Hyper Parameter Tuning.
 
         Output      :   The model with the best parameters
@@ -152,6 +147,55 @@ class Model_Finder:
                 e, self.class_name, method_name, self.log_file
             )
 
+    def get_decision_tree_model(self, train_x, train_y, test_x, test_y):
+        """
+        Method Name :   get_decision_tree_model
+        Description :   get the parameters for XGBoost Algorithm which give the least r2 score.
+        
+        Output      :   The best model name and the model object
+        On Failure  :   Write an exception log and then raise an exception
+
+        Version     :   1.2
+        Revisions   :   moved setup to cloud
+        """
+        method_name = self.get_decision_tree_model.__name__
+
+        self.log_writer.start_log("start", self.class_name, method_name, self.log_file)
+        try:
+            self.dt_model_name = self.xgb_model.__class__.__name__
+
+            self.dt_best_params = self.model_utils.get_model_params(
+                self.dt_model, train_x, train_y, self.log_file
+            )
+
+            self.log_writer.log(
+                f"{self.dt_model_name} model best params are {self.dt_best_params}",
+                self.log_file,
+            )
+
+            self.dt_model.set_params(**self.dt_best_params)
+
+            self.log_writer.log(
+                f"Initialized {self.xgb_model_name} model with best params as {self.dt_best_params}",
+                self.log_file,
+            )
+
+            self.dt_model.fit(train_x, train_y)
+
+            self.log_writer.log(
+                f"Created {self.xgb_model_name} model with best params as {self.dt_best_params}",
+                self.log_file,
+            )
+
+            self.log_writer.start_log(
+                "exit", self.class_name, method_name, self.log_file
+            )
+
+            return self.dt_model
+
+        except Exception as e:
+            raise e
+
     def get_trained_models(self, train_x, train_y, test_x, test_y):
         """
         Method Name :   get_trained_models
@@ -198,9 +242,25 @@ class Model_Finder:
                 self.log_file,
             )
 
+            self.dt_model = self.get_decision_tree_model(train_x, train_y)
+
+            self.log_writer.log(
+                f"Got trained {self.dt_model.__class__.__name__} model", self.log_file
+            )
+
+            self.dt_model_score = self.model_utils.get_model_score(
+                self.dt_model, test_x, test_y, self.log_file
+            )
+
+            self.log_writer.log(
+                f"{self.dt_model.__class__.__name__} model score is {self.dt_model_score}",
+                self.log_file,
+            )
+
             lst = [
                 (self.xgb_model, self.xgb_model_score),
                 (self.rf_model, self.rf_model_score),
+                (self.dt_model, self.dt_model_score),
             ]
 
             self.log_writer.log(
@@ -254,14 +314,7 @@ class Model_Finder:
 
                 model_score = tm[1]
 
-                self.blob.save_model(
-                    model,
-                    self.model_dir["train"],
-                    "model",
-                    self.save_format,
-                    log_file,
-                    idx=idx,
-                )
+                self.blob.save_model(model, "model", log_file, model_dir="train")
 
                 self.mlflow_op.log_all_for_model(model, model_score, idx)
 
