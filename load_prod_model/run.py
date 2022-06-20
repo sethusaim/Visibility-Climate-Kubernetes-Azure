@@ -1,28 +1,18 @@
-from blob_operations import Blob_Operation
 from mlflow_operations import MLFlow_Operation
 from utils.logger import App_Logger
 from utils.main_utils import Main_Utils
-from utils.read_params import read_params
 
 
 class Load_Prod_Model:
     """
     Description :   This class shall be used for loading the production model
-    
     Version     :   1.2
+    
     Revisions   :   Moved to setup to cloud 
     """
 
     def __init__(self):
-        self.config = read_params()
-
         self.class_name = self.__class__.__name__
-
-        self.container = self.config["blob_container"]
-
-        self.mlflow_config = self.config["mlflow_config"]
-
-        self.blob = Blob_Operation()
 
         self.log_writer = App_Logger()
 
@@ -48,21 +38,13 @@ class Load_Prod_Model:
         )
 
         try:
-            self.utils.create_prod_and_stag_dirs("model", "load_prod_model")
-
             self.mlflow_op.set_mlflow_tracking_uri()
 
-            exp = self.mlflow_op.get_experiment_from_mlflow(
-                self.mlflow_config["exp_name"]
-            )
+            exp = self.mlflow_op.get_experiment("exp_name")
 
             runs = self.mlflow_op.get_runs_from_mlflow(exp.experiment_id)
 
-            feat_fnames = self.blob.get_files_from_folder(
-                self.config["feature_pattern"], "feature_store", "load_prod_model",
-            )
-
-            num_clusters = len(feat_fnames)
+            num_clusters = self.utils.get_number_of_clusters("load_prod_model")
 
             """
             Code Explaination: 
@@ -74,77 +56,10 @@ class Load_Prod_Model:
 
             Eg- metrics.XGBoost1-best_score
             """
-            reg_model_names = self.mlflow_op.get_mlflow_models()
 
-            cols = [
-                "metrics." + str(model) + "-best_score"
-                for model in reg_model_names
-                if model != "KMeans"
-            ]
-
-            self.log_writer.log(
-                "Created cols for all registered model", "load_prod_model"
+            top_mn_lst = self.mlflow_op.get_best_models(
+                runs, num_clusters, "load_prod_model"
             )
-
-            runs_cols = runs.filter(cols).max().sort_values(ascending=False)
-
-            self.log_writer.log(
-                "Sorted the runs cols in descending order", "load_prod_model"
-            )
-
-            metrics_dict = runs_cols.to_dict()
-
-            self.log_writer.log("Converted runs cols to dict", "load_prod_model")
-
-            """ 
-            Eg-output: For 3 clusters, 
-            
-            [
-                metrics.XGBoost0-best_score,
-                metrics.XGBoost1-best_score,
-                metrics.XGBoost2-best_score,
-                metrics.RandomForest0-best_score,
-                metrics.RandomForest1-best_score,
-                metrics.RandomForest2-best_score
-            ] 
-
-            Eg- runs_dataframe: I am only showing for 3 cols,actual runs dataframe will be different
-                                based on the number of clusters
-                
-                since for every run cluster values changes, rest two cols will be left as blank,
-                so only we are taking the max value of each col, which is nothing but the value of the metric
-                
-
-run_number  metrics.XGBoost0-best_score metrics.RandomForest1-best_score metrics.XGBoost1-best_score
-    0                   1                       0.5
-    1                                                                                   1                 
-    2                                                                           
-            """
-
-            best_metrics_names = [
-                max(
-                    [
-                        (file, metrics_dict[file])[0]
-                        for file in metrics_dict
-                        if str(i) in file
-                    ]
-                )
-                for i in range(0, num_clusters)
-            ]
-
-            self.log_writer.log(
-                f"Got top model names based on the metrics of clusters",
-                "load_prod_model",
-            )
-
-            ## best_metrics will store the value of metrics, but we want the names of the models,
-            ## so best_metrics.index will return the name of the metric as registered in mlflow
-
-            ## Eg. metrics.XGBoost1-best_score
-
-            ## top_mn_lst - will store the top 3 model names
-
-            top_mn_lst = [mn.split(".")[1].split("-")[0] for mn in best_metrics_names]
 
             self.log_writer.log(f"Got the top model names", "load_prod_model")
 
@@ -155,25 +70,11 @@ run_number  metrics.XGBoost0-best_score metrics.RandomForest1-best_score metrics
             ## we are checking if the model name is in the top 3 model list, if present we are putting that
             ## model into production or staging
 
-            for res in results:
-                for mv in res.latest_versions:
-                    if mv.name in top_mn_lst:
-                        self.mlflow_op.transition_mlflow_model(
-                            mv.version, "Production", mv.name, "model", "model",
-                        )
-
-                    ## In the registered models, even kmeans model is present, so during Prediction,
-                    ## this model also needs to be in present in production, the code logic is present below
-
-                    elif mv.name == "KMeans":
-                        self.mlflow_op.transition_mlflow_model(
-                            mv.version, "Production", mv.name, "model", "model",
-                        )
-
-                    else:
-                        self.mlflow_op.transition_mlflow_model(
-                            mv.version, "Staging", mv.name, "model", "model",
-                        )
+            [
+                self.mlflow_op.transition_best_models(mv, top_mn_lst)
+                for res in results
+                for mv in res.latest_versions
+            ]
 
             self.log_writer.log(
                 "Transitioning of models based on scores successfully done",
@@ -181,12 +82,12 @@ run_number  metrics.XGBoost0-best_score metrics.RandomForest1-best_score metrics
             )
 
             self.log_writer.start_log(
-                "exit", self.class_name, method_name, "load_prod_model",
+                "exit", self.class_name, method_name, "load_prod_model"
             )
 
         except Exception as e:
             self.log_writer.exception_log(
-                e, self.class_name, method_name, "load_prod_model",
+                e, self.class_name, method_name, "load_prod_model"
             )
 
 

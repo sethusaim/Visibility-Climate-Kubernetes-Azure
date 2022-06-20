@@ -1,7 +1,3 @@
-from os import listdir
-from os.path import join
-from shutil import rmtree
-
 from blob_operations import Blob_Operation
 
 from utils.logger import App_Logger
@@ -27,6 +23,8 @@ class Main_Utils:
 
         self.log_dir = self.config["log_dir"]
 
+        self.feats_pattern = self.config["feature_pattern"]
+
         self.file_format = self.config["model_save_format"]
 
         self.class_name = self.__class__.__name__
@@ -47,22 +45,11 @@ class Main_Utils:
         self.log_writer.start_log("start", self.class_name, method_name, "upload")
 
         try:
-            lst = listdir(self.log_dir)
-
-            self.log_writer.log("Got list of logs from train_logs folder", "upload")
-
-            for f in lst:
-                local_f = join(self.log_dir, f)
-
-                dest_f = self.log_dir + "/" + f
-
-                self.s3.upload_file(local_f, dest_f, "logs", "upload")
+            self.blob.upload_folder(self.log_dir, "logs", "upload")
 
             self.log_writer.log("Uploaded logs to logs container", "upload")
 
             self.log_writer.start_log("exit", self.class_name, method_name, "upload")
-
-            rmtree(self.log_dir)
 
         except Exception as e:
             self.log_writer.exception_log(e, self.class_name, method_name, "upload")
@@ -94,27 +81,38 @@ class Main_Utils:
         except Exception as e:
             self.log_writer.exception_log(e, self.class_name, method_name, log_file)
 
-    def create_prod_and_stag_dirs(self, container, log_file):
+    def get_number_of_clusters(self, log_file):
         """
-        Method Name :   create_prod_and_stag_dirs
-        Description :   This method creates folders for production and staging container
-
-        Output      :   Folders for production and staging are created in s3 container
+        Method Name :   get_number_of_cluster
+        Description :   This method gets the number of clusters based on training data on which clustering algorithm was used
+        Output      :   The number of clusters for the given training data is returned
         On Failure  :   Write an exception log and then raise an exception
-
         Version     :   1.2
         Revisions   :   moved setup to cloud
         """
-        method_name = self.create_prod_and_stag_dirs.__name__
+        method_name = self.get_number_of_clusters.__name__
 
         self.log_writer.start_log("start", self.class_name, method_name, log_file)
 
         try:
-            self.s3.create_folder(self.models_dir["prod"], container, log_file)
+            feat_fnames = self.blob.get_files_from_folder(
+                self.feats_pattern, "feature_store", log_file
+            )
 
-            self.s3.create_folder(self.models_dir["stag"], container, log_file)
+            self.log_writer.log(
+                f"Got features file names from feature store bucket based on feature pattern",
+                log_file,
+            )
+
+            num_clusters = len(feat_fnames)
+
+            self.log_writer.log(
+                f"Got the number of clusters as {num_clusters}", log_file
+            )
 
             self.log_writer.start_log("exit", self.class_name, method_name, log_file)
+
+            return num_clusters
 
         except Exception as e:
             self.log_writer.exception_log(e, self.class_name, method_name, log_file)

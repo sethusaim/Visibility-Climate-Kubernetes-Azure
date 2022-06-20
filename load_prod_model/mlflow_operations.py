@@ -12,13 +12,15 @@ from utils.read_params import read_params
 class MLFlow_Operation:
     """
     Description :    This class shall be used for handling all the mlflow operations
-    
     Version     :   1.2
+    
     Revisions   :   Moved to setup to cloud 
     """
 
     def __init__(self, log_file):
         self.config = read_params()
+
+        self.mlflow_config = self.config["mlflow_config"]
 
         self.class_name = self.__class__.__name__
 
@@ -33,10 +35,6 @@ class MLFlow_Operation:
         self.remote_server_uri = environ["MLFLOW_TRACKING_URI"]
 
         self.client = MlflowClient(self.remote_server_uri)
-
-        self.models_dir = self.config["models_dir"]
-
-        self.model_save_format = self.config["model_save_format"]
 
     def set_mlflow_tracking_uri(self):
         """
@@ -67,9 +65,9 @@ class MLFlow_Operation:
                 e, self.class_name, method_name, self.log_file
             )
 
-    def get_experiment_from_mlflow(self, exp_name):
+    def get_experiment(self, exp_name):
         """
-        Method Name :   get_experiment_from_mlflow
+        Method Name :   get_experiment
         Description :   This method gets the experiment from mlflow server using the experiment name
         
         Output      :   An experiment which was stored in mlflow server
@@ -78,12 +76,12 @@ class MLFlow_Operation:
         Version     :   1.2
         Revisions   :   moved setup to cloud
         """
-        method_name = self.get_experiment_from_mlflow.__name__
+        method_name = self.get_experiment.__name__
 
         self.log_writer.start_log("start", self.class_name, method_name, self.log_file)
 
         try:
-            exp = get_experiment_by_name(exp_name)
+            exp = get_experiment_by_name(self.mlflow_config[exp_name])
 
             self.log_writer.log(f"Got {exp_name} experiment from mlflow", self.log_file)
 
@@ -122,14 +120,14 @@ class MLFlow_Operation:
             )
 
             self.log_writer.start_log(
-                "exit", self.class_name, method_name, self.log_file,
+                "exit", self.class_name, method_name, self.log_file
             )
 
             return runs
 
         except Exception as e:
             self.log_writer.exception_log(
-                e, self.class_name, method_name, self.log_file,
+                e, self.class_name, method_name, self.log_file
             )
 
     def get_mlflow_models(self):
@@ -153,14 +151,14 @@ class MLFlow_Operation:
             self.log_writer.log("Got registered models from mlflow", self.log_file)
 
             self.log_writer.start_log(
-                "exit", self.class_name, method_name, self.log_file,
+                "exit", self.class_name, method_name, self.log_file
             )
 
             return reg_model_names
 
         except Exception as e:
             self.log_writer.exception_log(
-                e, self.class_name, method_name, self.log_file,
+                e, self.class_name, method_name, self.log_file
             )
 
     def search_mlflow_models(self, order):
@@ -186,24 +184,24 @@ class MLFlow_Operation:
             )
 
             self.log_writer.start_log(
-                "exit", self.class_name, method_name, self.log_file,
+                "exit", self.class_name, method_name, self.log_file
             )
 
             return results
 
         except Exception as e:
             self.log_writer.exception_log(
-                e, self.class_name, method_name, self.log_file,
+                e, self.class_name, method_name, self.log_file
             )
 
     def transition_mlflow_model(
-        self, model_version, stage, model_name, from_container, to_container,
+        self, model_version, stage, model_name, from_bucket, to_bucket
     ):
         """
         Method Name :   transition_mlflow_model
-        Description :   This method transitions mlflow model from one stage to other stage, and does the same in s3 container
+        Description :   This method transitions mlflow model from one stage to other stage, and does the same in blob bucket
         
-        Output      :   A mlflow model is transitioned from one stage to another, and same is reflected in s3 container
+        Output      :   A mlflow model is transitioned from one stage to another, and same is reflected in blob bucket
         On Failure  :   Write an exception log and then raise an exception
         
         Version     :   1.2
@@ -251,9 +249,9 @@ class MLFlow_Operation:
 
                 self.blob.copy_data(
                     train_model_file,
-                    from_container,
+                    from_bucket,
                     prod_model_file,
-                    to_container,
+                    to_bucket,
                     self.log_file,
                 )
 
@@ -272,9 +270,9 @@ class MLFlow_Operation:
 
                 self.blob.copy_data(
                     train_model_file,
-                    from_container,
+                    from_bucket,
                     stag_model_file,
-                    to_container,
+                    to_bucket,
                     self.log_file,
                 )
 
@@ -284,10 +282,160 @@ class MLFlow_Operation:
                 )
 
             self.log_writer.start_log(
-                "exit", self.class_name, method_name, self.log_file,
+                "exit", self.class_name, method_name, self.log_file
             )
 
         except Exception as e:
             self.log_writer.exception_log(
-                e, self.class_name, method_name, self.log_file,
+                e, self.class_name, method_name, self.log_file
             )
+
+    def transition_best_models(self, model, top_models):
+        """
+        Method Name :   transition_best_models
+        Description :   This method transitions the models to staging or production based on the condition nad moves the models within
+                        blob buckets also.
+        
+        Output      :   A list of registered models in the mentioned order
+        On Failure  :   Write an exception log and then raise an exception
+        
+        Version     :   1.2
+        Revisions   :   moved setup to cloud
+        """
+        method_name = self.transition_best_models.__name__
+
+        self.log_writer.start_log("start", self.class_name, method_name, self.log_file)
+
+        try:
+            self.log_writer.log(
+                "Started transitioning best models to production and rest to staging",
+                self.log_file,
+            )
+
+            if model.name in top_models:
+                self.transition_mlflow_model(
+                    model.version, "Production", model.name, "model", "model"
+                )
+
+            ## In the registered models, even kmeans model is present, so during Prediction,
+            ## this model also needs to be in present in production, the code logic is present below
+
+            elif model.name == "KMeans":
+                self.transition_mlflow_model(
+                    model.version, "Production", model.name, "model", "model"
+                )
+
+            else:
+                self.transition_mlflow_model(
+                    model.version, "Staging", model.name, "model", "model"
+                )
+
+            self.log_writer.log(
+                "Transitioned best models to production and rest to staging",
+                self.log_file,
+            )
+
+            self.log_writer.start_log(
+                "exit", self.class_name, method_name, self.log_file
+            )
+
+        except Exception as e:
+            self.log_writer.exception_log(
+                e, self.class_name, method_name, self.log_file
+            )
+
+    def get_best_models(self, runs, num_clusters, log_file):
+        """
+        Method Name :   get_best_models
+        Description :   This method get the best models from the runs dataframe and based on the number of clusters
+        
+        Output      :   A list of registered models in the mentioned order
+        On Failure  :   Write an exception log and then raise an exception
+        
+        Version     :   1.2
+        Revisions   :   moved setup to cloud
+        """
+        method_name = self.get_best_models.__name__
+
+        self.log_writer.start_log("start", self.class_name, method_name, log_file)
+
+        try:
+            reg_model_names = self.get_mlflow_models()
+
+            cols = [
+                "metrics." + str(model) + "-best_score"
+                for model in reg_model_names
+                if model != "KMeans"
+            ]
+
+            self.log_writer.log(
+                "Created cols list based on registered models", log_file
+            )
+
+            runs_cols = runs.filter(cols).max().sort_values(ascending=False)
+
+            self.log_writer.log(
+                "Filtered the runs dataframe based on the cols in descending order",
+                log_file,
+            )
+
+            metrics_dict = runs_cols.to_dict()
+
+            self.log_writer.log("Converted runs_cols to dict", log_file)
+
+            """ 
+                        Eg-output: For 3 clusters, 
+                            [
+                            metrics.XGBoost0-best_score,
+                            metrics.XGBoost1-best_score,
+                            metrics.XGBoost2-best_score,
+                            metrics.RandomForest0-best_score,
+                            metrics.RandomForest1-best_score,
+                            metrics.RandomForest2-best_score
+                        ] 
+
+                        Eg- runs_dataframe: I am only showing for 3 cols,actual runs dataframe will be different
+                                            based on the number of clusters
+                                    since for every run cluster values changes, rest two cols will be left as blank,
+                            so only we are taking the max value of each col, which is nothing but the value of the metric
+                            
+
+            run_number  metrics.XGBoost0-best_score metrics.RandomForest1-best_score metrics.XGBoost1-best_score
+                0                   1                       0.5
+                1                                                                                   1             2                                                                               """
+
+            best_metrics_names = [
+                max(
+                    [
+                        (file, metrics_dict[file])[0]
+                        for file in metrics_dict
+                        if str(i) in file
+                    ]
+                )
+                for i in range(0, num_clusters)
+            ]
+
+            self.log_writer.log(
+                "Got the best metric names from the metrics_dict and number of clusters",
+                log_file,
+            )
+
+            ## best_metrics will store the value of metrics, but we want the names of the models,
+            ## so best_metrics.index will return the name of the metric as registered in mlflow
+
+            ## Eg. metrics.XGBoost1-best_score
+
+            ## top_mn_lst - will store the top 3 model names
+
+            top_mn_lst = [mn.split(".")[1].split("-")[0] for mn in best_metrics_names]
+
+            self.log_writer.log(
+                "Got the top model list from best_metrics names", log_file
+            )
+
+            self.log_writer.start_log("exit", self.class_name, method_name, log_file)
+
+            return top_mn_lst
+
+        except Exception as e:
+            self.log_writer.exception_log(e, self.class_name, method_name, log_file)

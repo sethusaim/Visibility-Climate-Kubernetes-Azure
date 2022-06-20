@@ -1,4 +1,6 @@
-from os import environ
+from os import environ, listdir
+from os.path import join
+from shutil import rmtree
 
 from azure.storage.blob import BlobServiceClient, ContainerClient
 
@@ -18,6 +20,8 @@ class Blob_Operation:
         self.class_name = self.__class__.__name__
 
         self.config = read_params()
+
+        self.container = self.config["blob_container"]
 
         self.log_writer = App_Logger()
 
@@ -40,7 +44,7 @@ class Blob_Operation:
 
         try:
             container_client = ContainerClient.from_connection_string(
-                self.connection_string, container=container
+                self.connection_string, container=self.container[container]
             )
 
             self.log_writer.log("Got container client from connection string", log_file)
@@ -74,7 +78,9 @@ class Blob_Operation:
                 "Got BlobServiceClient from connection string", log_file
             )
 
-            blob_client = client.get_blob_client(container=container, blob=blob_fname)
+            blob_client = client.get_blob_client(
+                container=self.container[container], blob=blob_fname
+            )
 
             self.log_writer.log(
                 f"Got blob client for {blob_fname} blob {container} container", log_file
@@ -184,6 +190,50 @@ class Blob_Operation:
             self.log_writer.start_log("exit", self.class_name, method_name, log_file)
 
             return f_name_lst
+
+        except Exception as e:
+            self.log_writer.exception_log(e, self.class_name, method_name, log_file)
+
+    def upload_folder(self, folder, container, log_file, delete=True):
+        """
+        Method Name :   upload_folder
+        Description :   This method uploads the given folder to container
+        
+        Output      :   The folder is uploaded to container
+        On Failure  :   Write an exception log and then raise an exception
+        
+        Version     :   1.2
+        Revisions   :   moved setup to cloud
+        """
+        method_name = self.upload_folder.__name__
+
+        self.log_writer.start_log("start", self.class_name, method_name, log_file)
+
+        try:
+            lst = listdir(folder)
+
+            self.log_writer.log(f"Got list of files from the {folder} folder", log_file)
+
+            self.log_writer.log(
+                f"Uploading files from {folder} folder to container", log_file
+            )
+
+            for f in lst:
+                local_f = join(folder, f)
+
+                dest_f = folder + "/" + f
+
+                self.upload_file(local_f, dest_f, container, log_file)
+
+            if delete is True:
+                rmtree(folder)
+
+            else:
+                pass
+
+            self.log_writer.log(f"Uploaded {folder} folder to container", log_file)
+
+            self.log_writer.start_log("exit", self.class_name, method_name, log_file)
 
         except Exception as e:
             self.log_writer.exception_log(e, self.class_name, method_name, log_file)
