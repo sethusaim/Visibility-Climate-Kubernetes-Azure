@@ -11,21 +11,21 @@ from utils.read_params import read_params
 class MongoDB_Operation:
     """
     Description :   This method is used for all mongodb operations
-    
     Version     :   1.2
+    
     Revisions   :   Moved to setup to cloud 
     """
 
     def __init__(self):
+        self.config = read_params()
+
         self.class_name = self.__class__.__name__
+
+        self.mongo_config = self.config["mongodb"]
 
         self.DB_URL = environ["MONGODB_URL"]
 
         self.client = MongoClient(self.DB_URL)
-
-        self.config = read_params()
-
-        self.mongo_config = self.config["mongodb"]
 
         self.log_writer = App_Logger()
 
@@ -94,7 +94,6 @@ class MongoDB_Operation:
         On Failure  :   Write an exception log and then raise an exception
 
         Version     :   1.2
-        Written by  :   iNeuron Intelligence
         Revisions   :   moved setup to cloud
         """
         method_name = self.get_collection_as_dataframe.__name__
@@ -104,7 +103,7 @@ class MongoDB_Operation:
         try:
             database = self.get_database(db_name, log_file)
 
-            collection = database.get_collection(name=collection_name)
+            collection = self.get_collection(database, collection_name, log_file)
 
             df = DataFrame(list(collection.find()))
 

@@ -1,5 +1,5 @@
-from blob_operations import Blob_Operation
 from mongo_db_operations import MongoDB_Operation
+from blob_operations import Blo, Blob_Operation
 from utils.logger import App_Logger
 from utils.read_params import read_params
 
@@ -7,8 +7,8 @@ from utils.read_params import read_params
 class DB_Operation_Train:
     """
     Description :    This class shall be used for handling all the db operations
-    
     Version     :   1.2
+    
     Revisions   :   Moved to setup to cloud 
     """
 
@@ -51,24 +51,28 @@ class DB_Operation_Train:
                 df = f[0]
 
                 self.mongo.insert_dataframe_as_record(
-                    df, good_data_db_name, good_data_collection_name, "db_insert"
+                    df, good_data_db_name, good_data_collection_name, "db_insert",
                 )
 
                 self.log_writer.log(
-                    "Inserted dataframe as collection record in mongodb", "db_insert"
+                    "Inserted dataframe as collection record in mongodb", "db_insert",
                 )
 
-            self.log_writer.start_log("exit", self.class_name, method_name, "db_insert")
+            self.log_writer.start_log(
+                "exit", self.class_name, method_name, "db_insert",
+            )
 
         except Exception as e:
-            self.log_writer.exception_log(e, self.class_name, method_name, "db_insert")
+            self.log_writer.exception_log(
+                e, self.class_name, method_name, "db_insert",
+            )
 
     def export_collection_to_csv(self, good_data_db_name, good_data_collection_name):
         """
         Method Name :   export_collection_to_csv
         Description :   This method inserts the good data in MongoDB as collection
 
-        Output      :   A csv file stored in input files container, containing good data which was stored in MongoDB
+        Output      :   A csv file stored in input files bucket, containing good data which was stored in MongoDB
         On Failure  :   Write an exception log and then raise an exception
 
         Version     :   1.2
@@ -87,7 +91,7 @@ class DB_Operation_Train:
                 df,
                 self.files["train_export"],
                 self.files["train_export"],
-                "feature_store",
+                "feature_stire",
                 "export_csv",
             )
 

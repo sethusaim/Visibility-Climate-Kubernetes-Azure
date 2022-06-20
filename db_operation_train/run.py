@@ -5,9 +5,9 @@ from utils.main_utils import Main_Utils
 
 class Run:
     """
-    Description :   This class is used for running the data base operation trainiction service
-    
+    Description :   This class is used for running the database operation trainiction pipeline
     Version     :   1.2
+    
     Revisions   :   Moved to setup to cloud 
     """
 
@@ -21,11 +21,9 @@ class Run:
     def train_data_type_valid(self):
         """
         Method Name :   train_data_type_valid
-        Description :   This method performs the data type validation/database operations on the trainiction data
+        Description :   This method performs the database operations for trainiction data
 
-        Output      :   The data type validation/database operations are performed in trainiction data and artifacts are stored in 
-                        s3 buckets
-                        
+        Output      :   The dataframe is inserted in database collection
         On Failure  :   Write an exception log and then raise an exception
 
         Version     :   1.2
