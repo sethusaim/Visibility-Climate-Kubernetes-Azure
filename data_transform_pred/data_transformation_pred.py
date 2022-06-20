@@ -14,8 +14,6 @@ class Data_Transform_Pred:
     def __init__(self):
         self.config = read_params()
 
-        self.container = self.config["blob_container"]
-
         self.blob = Blob_Operation()
 
         self.log_writer = App_Logger()
@@ -23,8 +21,6 @@ class Data_Transform_Pred:
         self.data_dir = self.config["data_dir"]
 
         self.class_name = self.__class__.__name__
-
-        self.pred_data_transform_log = self.config["log"]["data_transform"]
 
     def add_quotes_to_string(self):
         """
@@ -40,47 +36,41 @@ class Data_Transform_Pred:
         method_name = self.add_quotes_to_string.__name__
 
         self.log_writer.start_log(
-            "start", self.class_name, method_name, self.pred_data_transform_log
+            "start", self.class_name, method_name, "data_transform"
         )
 
         try:
             lst = self.blob.read_csv_from_folder(
-                self.data_dir["good"],
-                self.container["pred_data"],
-                self.pred_data_transform_log,
+                self.data_dir["good"], "pred_data", "data_transform"
             )
 
-            for idx, f in enumerate(lst):
-                df = f[idx][0]
+            for _, f in enumerate(lst):
+                df = f[0]
 
-                file = f[idx][1]
+                file = f[1]
 
-                abs_f = f[idx][2]
+                abs_f = f[2]
 
                 self.log_writer.log(
                     "Got dataframe,file name and absolute file name from list of tuples",
-                    self.pred_data_transform_log,
+                    "data_transform",
                 )
 
                 df["DATE"] = df["DATE"].apply(lambda x: "'" + str(x) + "'")
 
                 self.log_writer.log(
-                    f"Quotes added for the file {file}", self.pred_data_transform_log
+                    f"Quotes added for the file {file}", "data_transform"
                 )
 
                 self.blob.upload_df_as_csv(
-                    df,
-                    abs_f,
-                    file,
-                    self.container["pred_data"],
-                    self.pred_data_transform_log,
+                    df, abs_f, file, "pred_data", "data_transform"
                 )
 
             self.log_writer.start_log(
-                "exit", self.class_name, method_name, self.pred_data_transform_log
+                "exit", self.class_name, method_name, "data_transform"
             )
 
         except Exception as e:
             self.log_writer.exception_log(
-                e, self.class_name, method_name, self.pred_data_transform_log
+                e, self.class_name, method_name, "data_transform"
             )
