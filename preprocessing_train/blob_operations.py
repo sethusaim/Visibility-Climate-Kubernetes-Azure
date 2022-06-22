@@ -1,7 +1,6 @@
 from io import StringIO
 from os import environ, listdir, remove
 from os.path import join
-from shutil import rmtree
 
 from azure.storage.blob import BlobServiceClient, ContainerClient
 from pandas import read_csv
@@ -370,7 +369,7 @@ class Blob_Operation:
         except Exception as e:
             self.log_writer.exception_log(e, self.class_name, method_name, log_file)
 
-    def upload_folder(self, folder, container, log_file, delete=True):
+    def upload_folder(self, folder, container, log_file):
         """
         Method Name :   upload_folder
         Description :   This method uploads the given folder to container
@@ -400,12 +399,6 @@ class Blob_Operation:
                 dest_f = folder + "/" + f
 
                 self.upload_file(local_f, dest_f, container, log_file)
-
-            if delete is True:
-                rmtree(folder)
-
-            else:
-                pass
 
             self.log_writer.log(f"Uploaded {folder} folder to container", log_file)
 

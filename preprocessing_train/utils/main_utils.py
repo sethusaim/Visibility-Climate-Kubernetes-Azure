@@ -1,3 +1,5 @@
+from shutil import rmtree
+
 from blob_operations import Blob_Operation
 
 from utils.logger import App_Logger
@@ -44,6 +46,8 @@ class Main_Utils:
             self.log_writer.log(f"Uploaded logs to logs container", "upload")
 
             self.log_writer.start_log("exit", self.class_name, method_name, "upload")
+
+            rmtree(self.log_dir)
 
         except Exception as e:
             self.log_writer.exception_log(e, self.class_name, method_name, "upload")
