@@ -61,7 +61,7 @@ class DB_Operation_Train:
         Method Name :   export_collection_to_csv
         Description :   This method inserts the good data in MongoDB as collection
 
-        Output      :   A csv file stored in input files bucket, containing good data which was stored in MongoDB
+        Output      :   A csv file stored in input files container, containing good data which was stored in MongoDB
         On Failure  :   Write an exception log and then raise an exception
 
         Version     :   1.2

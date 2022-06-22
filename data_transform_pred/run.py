@@ -23,7 +23,7 @@ class Run:
         Method Name :   pred_data_transform
         Description :   This method is used for performing data transformation operations on prediction data
         
-        Output      :   Data transformation is done on prediction data and artifacts are stored in s3 buckets
+        Output      :   Data transformation is done on prediction data and artifacts are stored in s3 containers
         On Failure  :   Write an exception log and then raise an exception
         
         Version     :   1.2

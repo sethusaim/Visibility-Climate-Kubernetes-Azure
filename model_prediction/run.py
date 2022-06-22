@@ -25,7 +25,7 @@ class Run:
         Method Name :   predict_from_model
         Description :   This method performs the model prediction on new data
         
-        Output      :   Model prediction are done on the new data, and results and artifacts are stored in s3 buckets
+        Output      :   Model prediction are done on the new data, and results and artifacts are stored in s3 containers
         On Failure  :   Write an exception log and then raise an exception
         
         Version     :   1.2

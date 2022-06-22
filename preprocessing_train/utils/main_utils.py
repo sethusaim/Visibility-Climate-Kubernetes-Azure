@@ -64,7 +64,7 @@ class Main_Utils:
                 log_file,
             )
 
-            self.log_writer.log("Uploaded preprocessed data to s3 bucket", log_file)
+            self.log_writer.log("Uploaded preprocessed data to s3 container", log_file)
 
             self.log_writer.start_log("exit", self.class_name, method_name, log_file)
 

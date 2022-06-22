@@ -150,10 +150,10 @@ class Main_Utils:
         except Exception as e:
             self.log_writer.exception_log(e, self.class_name, method_name, log_file)
 
-    def get_targets_csv(self, fname, bucket, log_file):
+    def get_targets_csv(self, fname, container, log_file):
         """
         Method Name :   get_targets_csv
-        Description :   This method gets the targets csv file present in blob bucket as numpy array
+        Description :   This method gets the targets csv file present in blob container as numpy array
         
         Output      :   The targets csv file is returned as numpy array
         On Failure  :   Write an exception log and then raise an exception
@@ -166,10 +166,10 @@ class Main_Utils:
         self.log_writer.start_log("start", self.class_name, method_name, log_file)
 
         try:
-            df = self.blob.read_csv(fname, bucket, log_file)["Labels"]
+            df = self.blob.read_csv(fname, container, log_file)["Labels"]
 
             self.log_writer.log(
-                "Got dataframe from {bucket} with file as {fname}", log_file
+                "Got dataframe from {container} with file as {fname}", log_file
             )
 
             self.log_writer.log("Got Labels col from dataframe", log_file)
@@ -184,7 +184,7 @@ class Main_Utils:
     def get_features_csv(self, fname, log_file):
         """
         Method Name :   get_features_csv
-        Description :   This method gets the features csv file present in blob bucket as numpy array
+        Description :   This method gets the features csv file present in blob container as numpy array
         
         Output      :   The features csv file is returned as numpy array
         On Failure  :   Write an exception log and then raise an exception
@@ -302,7 +302,7 @@ class Main_Utils:
             )
 
             self.log_writer.log(
-                f"Got features file names from s3 bucket based on {self.file_pattern}",
+                f"Got features file names from s3 container based on {self.file_pattern}",
                 log_file,
             )
 

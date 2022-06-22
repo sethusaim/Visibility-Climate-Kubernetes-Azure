@@ -8,7 +8,7 @@ class Train_Component:
     def __init__(self):
         self.config = read_params()
 
-        self.bucket = self.config["s3_bucket"]
+        self.container = self.config["s3_container"]
 
         self.comp_log = self.config["log"]["train_comp"]
 
@@ -28,7 +28,7 @@ class Train_Component:
 
         try:
             comp = self.kfp_comp.load_kfp_component(
-                self.train_comp["clustering"], self.bucket["components"]
+                self.train_comp["clustering"], self.container["components"]
             )
 
             self.log_writer.log("Got clustering component", self.comp_log)
@@ -52,7 +52,7 @@ class Train_Component:
 
         try:
             comp = self.kfp_comp.load_kfp_component(
-                self.train_comp["load_prod"], self.bucket["components"]
+                self.train_comp["load_prod"], self.container["components"]
             )
 
             self.log_writer.log("Got load production model component", self.comp_log)
@@ -76,7 +76,7 @@ class Train_Component:
 
         try:
             comp = self.kfp_comp.load_kfp_component(
-                self.train_comp["preprocess"], self.bucket["components"]
+                self.train_comp["preprocess"], self.container["components"]
             )
 
             self.log_writer.log("Got preprocessing component", self.comp_log)
@@ -98,7 +98,7 @@ class Train_Component:
 
         try:
             comp = self.kfp_comp.load_kfp_component(
-                self.train_comp["raw_data_val"], self.bucket["components"]
+                self.train_comp["raw_data_val"], self.container["components"]
             )
 
             self.log_writer.log(
@@ -124,7 +124,7 @@ class Train_Component:
 
         try:
             comp = self.kfp_comp.load_kfp_component(
-                self.train_comp["data_trans"], self.bucket["components"]
+                self.train_comp["data_trans"], self.container["components"]
             )
 
             self.log_writer.log("Got train data transform component", self.comp_log)
@@ -148,7 +148,7 @@ class Train_Component:
 
         try:
             comp = self.kfp_comp.load_kfp_component(
-                self.train_comp["db_operation"], self.bucket["components"]
+                self.train_comp["db_operation"], self.container["components"]
             )
 
             self.log_writer.log("Got train db operation component", self.comp_log)
@@ -172,7 +172,7 @@ class Train_Component:
 
         try:
             comp = self.kfp_comp.load_kfp_component(
-                self.train_comp["model"], self.bucket["components"]
+                self.train_comp["model"], self.container["components"]
             )
 
             self.log_writer.log("Got training model component", self.comp_log)
