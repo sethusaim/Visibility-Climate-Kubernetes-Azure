@@ -19,7 +19,7 @@ class Main_Utils:
 
         self.config = read_params()
 
-        self.log_dir = self.config["log_dir"]
+        self.log_dir = self.config["dir"]["log"]
 
         self.class_name = self.__class__.__name__
 
