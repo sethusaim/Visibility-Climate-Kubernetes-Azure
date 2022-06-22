@@ -3,7 +3,6 @@ from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeRegressor
 from xgboost import XGBRegressor
 
-from blob_operations import Blob_Operation
 from mlflow_operations import MLFlow_Operation
 from utils.logger import App_Logger
 from utils.model_utils import Model_Utils
@@ -32,8 +31,6 @@ class Model_Finder:
         self.model_utils = Model_Utils()
 
         self.log_writer = App_Logger()
-
-        self.blob = Blob_Operation()
 
         self.rf_model = RandomForestRegressor()
 
@@ -307,16 +304,11 @@ class Model_Finder:
 
             lst = self.get_trained_models(x_train, y_train, x_test, y_test)
 
-            self.log_writer.log("Got trained models", log_file)
+            self.log_writer.log(
+                f"Got trained models for {idx} cluster number", log_file
+            )
 
-            for _, tm in enumerate(lst):
-                model = tm[0]
-
-                model_score = tm[1]
-
-                self.blob.save_model(model, "model", log_file, model_dir="train")
-
-                self.mlflow_op.log_all_for_model(model, model_score, idx)
+            self.mlflow_op.save_and_log_models(lst, idx)
 
             self.log_writer.log(
                 "Saved and logged all trained models to mlflow", log_file

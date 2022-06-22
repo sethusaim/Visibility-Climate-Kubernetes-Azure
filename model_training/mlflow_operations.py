@@ -3,6 +3,7 @@ from os import environ
 from mlflow import log_metric, log_param, set_experiment, set_tracking_uri
 from mlflow.sklearn import log_model
 
+from blob_operations import Blob_Operation
 from utils.logger import App_Logger
 from utils.read_params import read_params
 
@@ -23,6 +24,8 @@ class MLFlow_Operation:
         self.log_writer = App_Logger()
 
         self.log_file = log_file
+
+        self.blob = Blob_Operation()
 
         self.mlflow_config = self.config["mlflow_config"]
 
@@ -225,6 +228,40 @@ class MLFlow_Operation:
 
             self.log_writer.log(
                 f"Logged model,metrics and parameters for {model_name} to mlflow",
+                self.log_file,
+            )
+
+            self.log_writer.start_log(
+                "exit", self.class_name, method_name, self.log_file
+            )
+
+        except Exception as e:
+            self.log_writer.exception_log(
+                e, self.class_name, method_name, self.log_file
+            )
+
+    def save_and_log_models(self, lst, idx):
+        method_name = self.save_and_log_models.__name__
+
+        self.log_writer.start_log("start", self.class_name, method_name, self.log_file)
+
+        try:
+            self.log_writer.log(
+                f"Started saving and logging of models,parameters and model score for {idx} cluster number",
+                self.log_file,
+            )
+
+            for _, tm in enumerate(lst):
+                model = tm[0]
+
+                model_score = tm[1]
+
+                self.blob.save_model(model, "model", self.log_file, model_dir="train")
+
+                self.log_all_for_model(model, model_score, idx)
+
+            self.log_writer.log(
+                "Saved and logged models,parameters and model score for {idx} cluster number",
                 self.log_file,
             )
 

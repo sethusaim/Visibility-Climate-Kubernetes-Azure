@@ -13,17 +13,15 @@ mlflow_config:
   run_name: mlops
   serialization_format: cloudpickle
 
-models_dir:
-  train: trained
+dir:
+  train_model: trained
+  log: model_training_logs
 
-file_pattern:
-  climate_features-
+file_pattern: climate_features-
 
 log:
   model_train: model_training_log.txt
   upload: upload_log.txt
-
-log_dir: model_training_logs
 
 model_utils:
   verbose: 3
@@ -52,7 +50,7 @@ RandomForestClassifier:
     - 3
     - 4
     - 5
-    
+
 XGBClassifier:
   learning_rate:
     - 0.5
