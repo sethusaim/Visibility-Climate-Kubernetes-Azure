@@ -1,6 +1,5 @@
 from blob_operations import Blob_Operation
 from utils.logger import App_Logger
-from utils.read_params import read_params
 
 
 class Data_Transform_Train:
@@ -12,13 +11,9 @@ class Data_Transform_Train:
     """
 
     def __init__(self):
-        self.config = read_params()
-
         self.blob = Blob_Operation()
 
         self.log_writer = App_Logger()
-
-        self.data_dir = self.config["data_dir"]
 
         self.class_name = self.__class__.__name__
 
@@ -41,7 +36,7 @@ class Data_Transform_Train:
 
         try:
             lst = self.blob.read_csv_from_folder(
-                self.data_dir["train_good"], "train_data", "data_transform"
+                "train_good_data", "train_data", "data_transform"
             )
 
             for _, f in enumerate(lst):

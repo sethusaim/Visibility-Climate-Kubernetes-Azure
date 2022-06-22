@@ -2,10 +2,9 @@ blob_container:
   train_data: climate-train-data
   logs: climate-logs
 
-log_dir: data_transform_train_logs
-
-data_dir:
-  train_good: good/train
+dir:
+  train_good_data: good/train
+  log: data_transform_train_logs
 
 log:
   data_transform: train_data_transform_log.txt

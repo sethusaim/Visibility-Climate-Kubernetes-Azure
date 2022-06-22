@@ -25,6 +25,8 @@ class Blob_Operation:
 
         self.container = self.config["blob_container"]
 
+        self.dir = self.config["dir"]
+
         self.log_writer = App_Logger()
 
         self.connection_string = environ["AZURE_CONN_STR"]
@@ -353,7 +355,7 @@ class Blob_Operation:
         try:
             client = self.get_container_client(container, log_file)
 
-            blob_list = client.list_blobs(name_starts_with=folder_name + "/")
+            blob_list = client.list_blobs(name_starts_with=self.dir[folder_name] + "/")
 
             f_name_lst = [f.name for f in blob_list]
 
