@@ -25,6 +25,8 @@ class Blob_Operation:
 
         self.container = self.config["blob_container"]
 
+        self.files = self.config["files"]
+
         self.connection_string = environ["AZURE_CONN_STR"]
 
         self.log_writer = App_Logger()
@@ -84,7 +86,7 @@ class Blob_Operation:
             )
 
             blob_client = client.get_blob_client(
-                container=self.container[container], blob=blob_fname
+                container=self.container[container], blob=self.files[blob_fname]
             )
 
             self.log_writer.log(
@@ -117,7 +119,7 @@ class Blob_Operation:
         try:
             client = self.get_container_client(container, log_file)
 
-            f = client.download_blob(blob=fname)
+            f = client.download_blob(blob=self.files[fname])
 
             self.log_writer.log(
                 f"Got {fname} info from {container} container", log_file
@@ -295,7 +297,7 @@ class Blob_Operation:
         self.log_writer.start_log("start", self.class_name, method_name, log_file)
 
         try:
-            blob_client = self.get_blob_client(blob_fname=fname, container=container,)
+            blob_client = self.get_blob_client(fname, container)
 
             self.log_writer.log("Got blob client from blob service client", log_file)
 
@@ -328,7 +330,7 @@ class Blob_Operation:
         try:
             client = self.get_container_client(container, log_file)
 
-            client.delete_blob(fname)
+            client.delete_blob(self.files[fname])
 
             self.log_writer.log(
                 f"Deleted {fname} file from {container} container", log_file
@@ -357,7 +359,7 @@ class Blob_Operation:
         self.log_writer.start_log("start", self.class_name, method_name, log_file)
 
         try:
-            dataframe.to_csv(local_fname, index=None, header=True)
+            dataframe.to_csv(self.files[local_fname], index=None, header=True)
 
             self.log_writer.log(
                 f"Created a local copy of dataframe with name {local_fname}", log_file

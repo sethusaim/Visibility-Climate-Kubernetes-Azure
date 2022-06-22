@@ -11,9 +11,6 @@ files:
 
 target_col: Output
 
-model_dir:
-  prod: production
-
 log:
   preprocess_pred: preprocess_pred_log.txt
   upload: upload_log.txt
@@ -22,7 +19,8 @@ knn_imputer:
   n_neighbors: 3
   weights: uniform
 
-log_dir: preprocess_pred_logs
+dir:
+  log: preprocess_pred_logs
 
 pca_model:
   n_components: 100

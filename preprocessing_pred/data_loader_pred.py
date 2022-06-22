@@ -1,6 +1,5 @@
 from blob_operations import Blob_Operation
 from utils.logger import App_Logger
-from utils.read_params import read_params
 
 
 class Data_Getter_Pred:
@@ -12,11 +11,7 @@ class Data_Getter_Pred:
     """
 
     def __init__(self, log_file):
-        self.config = read_params()
-
         self.log_file = log_file
-
-        self.files = self.config["files"]
 
         self.blob = Blob_Operation()
 
@@ -40,9 +35,7 @@ class Data_Getter_Pred:
         self.log_writer.start_log("start", self.class_name, method_name, self.log_file)
 
         try:
-            df = self.blob.read_csv(
-                self.files["pred_input"], "feature_store", self.log_file
-            )
+            df = self.blob.read_csv("pred_input", "feature_store", self.log_file)
 
             self.log_writer.log(
                 "Data loaded from pred input file and feature store container",

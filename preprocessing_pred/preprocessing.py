@@ -24,8 +24,6 @@ class Preprocessor:
 
         self.log_file = log_file
 
-        self.files = self.config["files"]
-
         self.imputer_params = self.config["knn_imputer"]
 
         self.blob = Blob_Operation()
@@ -68,7 +66,7 @@ class Preprocessor:
             self.log_writer.log("Column removal Unsuccessful", self.log_file)
 
             self.log_writer.exception_log(
-                e, self.class_name, method_name, self.log_file,
+                e, self.class_name, method_name, self.log_file
             )
 
     def separate_label_feature(self, data, label_column_name):
@@ -222,11 +220,7 @@ class Preprocessor:
             self.log_writer.log("Created data frame with null values", self.log_file)
 
             self.blob.upload_df_as_csv(
-                self.null_df,
-                self.files["null_values"],
-                self.files["null_values"],
-                "io_files",
-                self.log_file,
+                self.null_df, "null_values", "null_values", "io_files", self.log_file
             )
 
             self.log_writer.start_log(

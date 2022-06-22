@@ -19,9 +19,7 @@ class Main_Utils:
 
         self.config = read_params()
 
-        self.files = self.config["files"]
-
-        self.log_dir = self.config["log_dir"]
+        self.log_dir = self.config["dir"]["log"]
 
         self.class_name = self.__class__.__name__
 
@@ -66,16 +64,14 @@ class Main_Utils:
         self.log_writer.start_log("start", self.class_name, method_name, log_file)
 
         try:
-            f_exists = self.blob.load_file(
-                self.files["pred_file"], "io_files", log_file
-            )
+            f_exists = self.blob.load_file("pred_file", "io_files", log_file)
 
             if f_exists is True:
                 self.log_writer.log(
                     "Found existing Prediction batch file. Deleting it.", log_file
                 )
 
-                self.blob.delete_file(self.files["pred_file"], "io_files", log_file)
+                self.blob.delete_file("pred_file", "io_files", log_file)
 
             else:
                 self.log_writer.log(
@@ -96,8 +92,8 @@ class Main_Utils:
         try:
             self.blob.upload_df_as_csv(
                 data,
-                self.files["pred_input_preprocess"],
-                self.files["pred_input_preprocess"],
+                "pred_input_preprocess",
+                "pred_input_preprocess",
                 "feature_store",
                 log_file,
             )
