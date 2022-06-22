@@ -28,8 +28,6 @@ class Preprocessor:
 
         self.imputer_params = self.config["knn_imputer"]
 
-        self.container = self.config["blob_container"]
-
         self.blob = Blob_Operation()
 
         self.log_writer = App_Logger()
@@ -227,7 +225,7 @@ class Preprocessor:
                 self.null_df,
                 self.files["null_values"],
                 self.files["null_values"],
-                self.container["io_files"],
+                "io_files",
                 self.log_file,
             )
 

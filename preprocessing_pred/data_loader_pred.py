@@ -18,8 +18,6 @@ class Data_Getter_Pred:
 
         self.files = self.config["files"]
 
-        self.container = self.config["blob_container"]
-
         self.blob = Blob_Operation()
 
         self.log_writer = App_Logger()
@@ -43,11 +41,11 @@ class Data_Getter_Pred:
 
         try:
             df = self.blob.read_csv(
-                self.files["pred_input"], self.container["feature_store"], self.log_file
+                self.files["pred_input"], "feature_store", self.log_file
             )
 
             self.log_writer.log(
-                f"Data loaded from file {self.files['pred_input']} and container {self.container['feature_store']}",
+                "Data loaded from pred input file and feature store container",
                 self.log_file,
             )
 
