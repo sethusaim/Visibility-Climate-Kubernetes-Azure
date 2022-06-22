@@ -25,6 +25,8 @@ class Blob_Operation:
 
         self.container = self.config["blob_container"]
 
+        self.dir = self.config["dir"]
+
         self.log_writer = App_Logger()
 
         self.connection_string = environ["AZURE_CONN_STR"]
@@ -84,7 +86,7 @@ class Blob_Operation:
             )
 
             blob_client = client.get_blob_client(
-                container=self.container[container], blob=blob_fname
+                container=self.container[container], blob=self.files[blob_fname]
             )
 
             self.log_writer.log(
@@ -148,7 +150,7 @@ class Blob_Operation:
         try:
             client = self.get_container_client(container, log_file)
 
-            client.delete_blob(fname)
+            client.delete_blob(self.files[fname])
 
             self.log_writer.log(
                 f"Deleted {fname} file from {container} container", log_file
@@ -353,7 +355,7 @@ class Blob_Operation:
         try:
             client = self.get_container_client(container, log_file)
 
-            blob_list = client.list_blobs(name_starts_with=folder_name + "/")
+            blob_list = client.list_blobs(name_starts_with=self.dir[folder_name] + "/")
 
             f_name_lst = [f.name for f in blob_list]
 
@@ -424,7 +426,7 @@ class Blob_Operation:
         self.log_writer.start_log("start", self.class_name, method_name, log_file)
 
         try:
-            dataframe.to_csv(local_fname, index=None, header=True)
+            dataframe.to_csv(self.files[local_fname], index=None, header=True)
 
             self.log_writer.log(
                 f"Created a local copy of dataframe with name {local_fname}", log_file
