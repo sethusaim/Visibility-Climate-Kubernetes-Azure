@@ -94,7 +94,7 @@ class Main_Utils:
         self.log_writer.start_log("start", self.class_name, method_name, log_file)
 
         try:
-            self.s3.upload_df_as_csv(
+            self.blob.upload_df_as_csv(
                 data,
                 self.files["pred_input_preprocess"],
                 self.files["pred_input_preprocess"],
@@ -102,7 +102,9 @@ class Main_Utils:
                 log_file,
             )
 
-            self.log_writer.log("Uploaded preprocessed data to s3 bucket", log_file)
+            self.log_writer.log(
+                "Uploaded preprocessed data to blob container", log_file
+            )
 
             self.log_writer.start_log("exit", self.class_name, method_name, log_file)
 
