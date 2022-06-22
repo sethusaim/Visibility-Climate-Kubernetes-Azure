@@ -20,11 +20,7 @@ class Main_Utils:
 
         self.config = read_params()
 
-        self.model_dir = self.config["model_dir"]
-
-        self.log_dir = self.config["log_dir"]
-
-        self.files = self.config["files"]
+        self.log_dir = self.config["dir"]["log"]
 
         self.class_name = self.__class__.__name__
 
@@ -70,7 +66,7 @@ class Main_Utils:
 
         try:
             list_of_files = self.blob.get_files_from_folder(
-                self.model_dir["prod"], container, log_file
+                "prod_model", container, log_file
             )
 
             for file in list_of_files:
@@ -84,8 +80,7 @@ class Main_Utils:
             model_name = model_name.split(".")[0]
 
             self.log_writer.log(
-                f"Got {model_name} from {self.model_dir['prod']} folder in {container} container",
-                log_file,
+                f"Got {model_name} from prod folder in {container} container", log_file
             )
 
             self.log_writer.start_log("exit", self.class_name, method_name, log_file)
@@ -112,7 +107,7 @@ class Main_Utils:
 
         try:
             data = self.blob.read_csv(
-                self.files["pred_input_file_preprocess"], "feature_store", log_file
+                "pred_input_file_preprocess", "feature_store", log_file
             )
 
             self.log_writer.log("Got the prediction input file", log_file)
@@ -219,11 +214,7 @@ class Main_Utils:
 
         try:
             self.blob.upload_df_as_csv(
-                result_df,
-                self.files["pred_output"],
-                self.files["pred_output"],
-                "io_files",
-                log_file,
+                result_df, "pred_output", "pred_output", "io_files", log_file
             )
 
             self.log_writer.log(
