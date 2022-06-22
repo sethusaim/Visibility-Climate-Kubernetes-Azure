@@ -17,6 +17,12 @@ class Blob_Operation:
 
         self.connection_string = environ["AZURE_CONN_STR"]
 
+        self.container = self.config["blbb_container"]
+
+        self.files = self.config["files"]
+
+        self.dir = self.config["dir"]
+
         self.log_writer = App_Logger()
 
     def get_container_client(self, container, log_file):
@@ -26,7 +32,7 @@ class Blob_Operation:
 
         try:
             container_client = ContainerClient.from_connection_string(
-                conn_str=self.connection_string, container=container
+                conn_str=self.connection_string, container=self.container[container]
             )
 
             self.log_writer.log("Got container client from connection string", log_file)
@@ -50,7 +56,7 @@ class Blob_Operation:
                 "Got BlobServiceClient from connection string", log_file
             )
 
-            blob_client = client.get_blob_client(container, blob_fname)
+            blob_client = client.get_blob_client(container, self.files[blob_fname])
 
             self.log_writer.log(
                 f"Got blob client for {blob_fname} blob present in {container} container",
@@ -64,7 +70,7 @@ class Blob_Operation:
         except Exception as e:
             self.log_writer.exception_log(e, self.class_name, method_name, log_file)
 
-    def get_object(self, fname, container, log_file):
+    def get_object(self, fname, container, log_file, folder=False):
         method_name = self.get_object.__name__
 
         self.log_writer.start_log("start", self.class_name, method_name, log_file)
@@ -72,7 +78,9 @@ class Blob_Operation:
         try:
             client = self.get_container_client(container, log_file)
 
-            f = client.download_blob(blob=fname)
+            func = lambda: self.files[fname] if folder is False else fname
+
+            f = client.download_blob(blob=func())
 
             self.log_writer.log(
                 f"Got {fname} info from {container} container", log_file
@@ -179,7 +187,7 @@ class Blob_Operation:
         try:
             client = self.get_container_client(container, log_file)
 
-            client.delete_blob(fname)
+            client.delete_blob(self.files[fname])
 
             self.log_writer.log(
                 f"Deleted {fname} file from {container} container", log_file
@@ -223,7 +231,7 @@ class Blob_Operation:
                     )
 
                 with open(local_fname, "rb") as f:
-                    client.upload_blob(data=f, name=container_fname)
+                    client.upload_blob(data=f, name=self.container[container_fname])
 
                 self.log_writer.log(
                     f"Uploaded {local_fname} to {container} container with name as {container_fname} file",
@@ -261,7 +269,7 @@ class Blob_Operation:
         try:
             client = self.get_container_client(container, log_file)
 
-            blob_list = client.list_blobs(name_starts_with=folder_name + "/")
+            blob_list = client.list_blobs(name_starts_with=self.dir[folder_name] + "/")
 
             f_name_lst = [f.name for f in blob_list]
 
@@ -310,7 +318,7 @@ class Blob_Operation:
 
             from_blob = self.get_blob_url(from_fname, from_container, log_file)
 
-            to_blob = dest_client.get_blob_client(blob=to_fname)
+            to_blob = dest_client.get_blob_client(blob=self.files[to_fname])
 
             to_blob.start_copy_from_url(from_blob)
 
@@ -330,7 +338,7 @@ class Blob_Operation:
         self.log_writer.start_log("start", self.class_name, method_name, log_file)
 
         try:
-            content = self.read_object(object, log_file, make_readable=True,)
+            content = self.read_object(object, log_file, make_readable=True)
 
             df = read_csv(content)
 
@@ -343,13 +351,13 @@ class Blob_Operation:
         except Exception as e:
             self.log_writer.exception_log(e, self.class_name, method_name, log_file)
 
-    def read_csv(self, fname, container, log_file):
+    def read_csv(self, fname, container, log_file, folder=False):
         method_name = self.read_csv.__name__
 
         self.log_writer.start_log("start", self.class_name, method_name, log_file)
 
         try:
-            csv_obj = self.get_object(fname, container, log_file)
+            csv_obj = self.get_object(fname, container, log_file, folder=folder)
 
             df = self.get_df_from_object(csv_obj, log_file)
 
@@ -373,7 +381,11 @@ class Blob_Operation:
             files = self.get_files_from_folder(folder_name, container, log_file)
 
             lst = [
-                (self.read_csv(f, container, log_file), f, f.split("/")[-1],)
+                (
+                    self.read_csv(f, container, log_file, folder=True),
+                    f,
+                    f.split("/")[-1],
+                )
                 for f in files
             ]
 
@@ -417,7 +429,7 @@ class Blob_Operation:
         self.log_writer.start_log("start", self.class_name, method_name, log_file)
 
         try:
-            dataframe.to_csv(local_fname, index=None, header=True)
+            dataframe.to_csv(self.files[local_fname], index=None, header=True)
 
             self.log_writer.log(
                 f"Created a local copy of dataframe with name {local_fname}", log_file

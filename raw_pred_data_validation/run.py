@@ -1,20 +1,13 @@
 from pred_data_validation import Raw_Pred_Data_Validation
 from utils.logger import App_Logger
 from utils.main_utils import Main_Utils
-from utils.read_params import read_params
 
 
 class Run:
     def __init__(self):
-        self.config = read_params()
-
         self.class_name = self.__class__.__name__
 
         self.log_writer = App_Logger()
-
-        self.pred_main_log = self.config["log"]["raw_pred_main"]
-
-        self.container = self.config["blob_container"]
 
         self.raw_data = Raw_Pred_Data_Validation()
 
@@ -29,11 +22,11 @@ class Run:
         method_name = self.raw_pred_data_validation.__name__
 
         self.log_writer.start_log(
-            "start", self.class_name, method_name, self.pred_main_log,
+            "start", self.class_name, method_name, "raw_pred_main"
         )
 
         try:
-            self.log_writer.log("Raw Data Validation started !!", self.pred_main_log)
+            self.log_writer.log("Raw Data Validation started !!", "raw_pred_main")
 
             (
                 LengthOfDateStampInFile,
@@ -52,15 +45,15 @@ class Run:
 
             self.raw_data.validate_missing_values_in_col()
 
-            self.log_writer.log("Raw Data Validation Completed !!", self.pred_main_log)
+            self.log_writer.log("Raw Data Validation Completed !!", "raw_pred_main")
 
             self.log_writer.start_log(
-                "exit", self.class_name, method_name, self.pred_main_log,
+                "exit", self.class_name, method_name, "raw_pred_main"
             )
 
         except Exception as e:
             self.log_writer.exception_log(
-                e, self.class_name, method_name, self.pred_main_log,
+                e, self.class_name, method_name, "raw_pred_main"
             )
 
 

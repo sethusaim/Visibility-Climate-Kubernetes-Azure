@@ -4,6 +4,10 @@ WORKDIR /app
 
 COPY . /app
 
-RUN pip install --upgrade pip && pip install -r requirements.txt
+ARG AZURE_CONN_STR
 
-CMD ["python","run.py"]
+ENV AZURE_CONN_STR=$AZURE_CONN_STR
+
+RUN pip3 install --upgrade pip && pip3 install -r requirements.txt
+
+CMD ["python3","run.py"]

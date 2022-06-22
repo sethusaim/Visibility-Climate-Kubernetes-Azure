@@ -4,16 +4,15 @@ blob_container:
   raw_pred_data: climate-raw-data
   pred_data: climate-pred-data
 
-data_dir:
-  raw_pred_batch: pred_batch
-  pred_good: good/pred
-  pred_bad: bad/pred
+dir:
+  raw_pred_batch_data: pred_batch
+  pred_good_data: good/pred
+  pred_bad_data: bad/pred
+  log: raw_pred_data_val_logs
 
 files:
   pred_schema: climate-schema_preding.json
   regex: climate-regex.txt
-
-log_dir: raw_pred_data_val_logs
 
 log:
   upload: upload_raw_pred_data_val_log.txt
