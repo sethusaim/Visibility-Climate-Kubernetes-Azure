@@ -7,12 +7,9 @@ files:
   train_input: train_input_file.csv
   train_input_preprocess: train_input_file_preprocess.csv
   null_values: null_values.csv
-  train_file: trainictions.csv
+  train_file: trainings.csv
 
 target_col: Output
-
-model_dir:
-  prod: production
 
 log:
   preprocess_train: preprocess_train_log.txt
@@ -22,7 +19,8 @@ knn_imputer:
   n_neighbors: 3
   weights: uniform
 
-log_dir: preprocess_train_logs
+dir:
+  log: preprocess_train_logs
 
 pca_model:
   n_components: 100

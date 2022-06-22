@@ -24,8 +24,6 @@ class Preprocessor:
 
         self.log_file = log_file
 
-        self.files = self.config["files"]
-
         self.imputer_params = self.config["knn_imputer"]
 
         self.blob = Blob_Operation()
@@ -215,8 +213,8 @@ s
 
                 self.blob.upload_df_as_csv(
                     self.null_df,
-                    self.files["null_values"],
-                    self.files["null_values"],
+                    "null_values",
+                    "null_values",
                     "io_files",
                     self.log_file,
                 )

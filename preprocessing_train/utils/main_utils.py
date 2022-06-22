@@ -19,9 +19,7 @@ class Main_Utils:
 
         self.config = read_params()
 
-        self.files = self.config["files"]
-
-        self.log_dir = self.config["log_dir"]
+        self.log_dir = self.config["dir"]["log"]
 
         self.class_name = self.__class__.__name__
 
@@ -58,8 +56,8 @@ class Main_Utils:
         try:
             self.blob.upload_df_as_csv(
                 data,
-                self.files["pred_input_preprocess"],
-                self.files["pred_input_preprocess"],
+                "pred_input_preprocess",
+                "pred_input_preprocess",
                 "feature_store",
                 log_file,
             )

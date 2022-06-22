@@ -1,22 +1,17 @@
 from blob_operations import Blob_Operation
 from utils.logger import App_Logger
-from utils.read_params import read_params
 
 
 class Data_Getter_Train:
     """
-    Description :   This class shall be used for obtaining the df from the input files blob container where the trainiction file is present
+    Description :   This class shall be used for obtaining the df from the input files blob container where the training file is present
     
     Version     :   1.2
     Revisions   :   Moved to setup to cloud 
     """
 
     def __init__(self, log_file):
-        self.config = read_params()
-
         self.log_file = log_file
-
-        self.files = self.config["files"]
 
         self.blob = Blob_Operation()
 
@@ -27,7 +22,7 @@ class Data_Getter_Train:
     def get_data(self):
         """
         Method Name :   get_data
-        Description :   This method reads the data from the input files blob container where the trainiction file is present
+        Description :   This method reads the data from the input files blob container where the training file is present
         
         Output      :   A pandas dataframe
         On Failure  :   Write an exception log and then raise an exception
@@ -40,9 +35,7 @@ class Data_Getter_Train:
         self.log_writer.start_log("start", self.class_name, method_name, self.log_file)
 
         try:
-            df = self.blob.read_csv(
-                self.files["train_input"], "feature_store", self.log_file
-            )
+            df = self.blob.read_csv("train_input", "feature_store", self.log_file)
 
             self.log_writer.log("Data loaded from container", self.log_file)
 

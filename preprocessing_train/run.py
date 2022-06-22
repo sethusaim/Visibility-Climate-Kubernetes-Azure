@@ -1,18 +1,12 @@
-from blob_operations import Blob_Operation
 from data_loader_train import Data_Getter_Train
 from preprocessing import Preprocessor
 from utils.logger import App_Logger
 from utils.main_utils import Main_Utils
-from utils.read_params import read_params
 
 
 class Run:
     def __init__(self):
         self.class_name = self.__class__.__name__
-
-        self.config = read_params()
-
-        self.files = self.config["files"]
 
         self.data_getter_train = Data_Getter_Train("preprocess_train")
 
@@ -20,7 +14,7 @@ class Run:
 
         self.log_writer = App_Logger()
 
-        self.blob = Blob_Operation()
+        self.utils = Main_Utils()
 
     def run_preprocess(self):
         method_name = self.run_preprocess.__name__
@@ -62,16 +56,10 @@ class Run:
                 "Removed columns with zero standard deviation", "preprocess_train"
             )
 
-            self.blob.upload_df_as_csv(
-                data,
-                self.files["train_input_preprocess"],
-                self.files["train_input_preprocess"],
-                "feature_store",
-                "preprocess_train",
-            )
+            self.utils.upload_preprocessed_data(data, "preprocess_train")
 
             self.log_writer.log(
-                "Completed preprocessing for trainiction data", "preprocess_train"
+                "Completed preprocessing for training data", "preprocess_train"
             )
 
             self.log_writer.start_log(
