@@ -1,7 +1,3 @@
-from os import listdir
-from os.path import join
-from shutil import rmtree
-
 from blob_operations import Blob_Operation
 
 from utils.logger import App_Logger
@@ -23,6 +19,8 @@ class Main_Utils:
 
         self.config = read_params()
 
+        self.files = self.config["files"]
+
         self.log_dir = self.config["log_dir"]
 
         self.class_name = self.__class__.__name__
@@ -43,24 +41,32 @@ class Main_Utils:
         self.log_writer.start_log("start", self.class_name, method_name, "upload")
 
         try:
-            lst = listdir(self.log_dir)
-
-            self.log_writer.log(
-                f"Got list of logs from {self.log_dir} folder", "upload"
-            )
-
-            for f in lst:
-                local_f = join(self.log_dir, f)
-
-                dest_f = self.log_dir + "/" + f
-
-                self.blob.upload_file(local_f, dest_f, "logs", "upload")
+            self.blob.upload_folder(self.log_dir, "logs", "upload")
 
             self.log_writer.log(f"Uploaded logs to logs container", "upload")
 
             self.log_writer.start_log("exit", self.class_name, method_name, "upload")
 
-            rmtree(self.log_dir)
-
         except Exception as e:
             self.log_writer.exception_log(e, self.class_name, method_name, "upload")
+
+    def upload_preprocessed_data(self, data, log_file):
+        method_name = self.upload_preprocessed_data.__name__
+
+        self.log_writer.start_log("start", self.class_name, method_name, log_file)
+
+        try:
+            self.blob.upload_df_as_csv(
+                data,
+                self.files["pred_input_preprocess"],
+                self.files["pred_input_preprocess"],
+                "feature_store",
+                log_file,
+            )
+
+            self.log_writer.log("Uploaded preprocessed data to s3 bucket", log_file)
+
+            self.log_writer.start_log("exit", self.class_name, method_name, log_file)
+
+        except Exception as e:
+            self.log_writer.exception_log(e, self.class_name, method_name, log_file)
