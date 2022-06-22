@@ -30,7 +30,9 @@ class Blob_Operation:
 
         self.save_format = self.config["model_save_format"]
 
-        self.model_dir = self.config["model_dir"]
+        self.dir = self.config["dir"]
+
+        self.files = self.config["files"]
 
         self.log_writer = App_Logger()
 
@@ -83,9 +85,17 @@ class Blob_Operation:
         try:
             client = BlobServiceClient.from_connection_string(self.connection_string)
 
-            blob_client = client.get_blob_client(
-                container=self.container[container], blob=blob_fname
+            self.log_writer.log(
+                "Got blob service client from connection string", log_file
             )
+
+            blob_client = client.get_blob_client(
+                container=self.container[container], blob=self.files[blob_fname]
+            )
+
+            self.log_writer.log("Got blob client for blob and container", log_file)
+
+            self.log_writer.start_log("exit", self.class_name, method_name, log_file)
 
             return blob_client
 
@@ -141,7 +151,7 @@ class Blob_Operation:
         try:
             client = self.get_container_client(container, log_file)
 
-            client.delete_blob(fname)
+            client.delete_blob(self.files[fname])
 
             self.log_writer.log(
                 f"Deleted {fname} file from {container} container", log_file
@@ -199,7 +209,7 @@ class Blob_Operation:
                     )
 
                 with open(local_fname, "rb") as f:
-                    client.upload_blob(data=f, name=container_fname)
+                    client.upload_blob(data=f, name=self.files[container_fname])
 
                 self.log_writer.log(
                     f"Uploaded {local_fname} to {container} container with name as {container_fname} file",
@@ -213,7 +223,7 @@ class Blob_Operation:
                 )
 
             if delete is True:
-                remove(local_fname)
+                remove(self.files[local_fname])
 
                 self.log_writer.log(
                     f"delete option is set to {delete}, deleted {local_fname} from local",
@@ -260,8 +270,8 @@ class Blob_Operation:
             )
 
             dir_func = (
-                lambda: self.model_dir[model_dir] + "/" + model_file
-                if self.model_dir[model_dir] is not None
+                lambda: self.dir[model_dir] + "/" + model_file
+                if self.dir[model_dir] is not None
                 else model_file
             )
 
@@ -302,7 +312,7 @@ class Blob_Operation:
         try:
             client = self.get_container_client(container, log_file)
 
-            f = client.download_blob(blob=fname)
+            f = client.download_blob(blob=self.files[fname])
 
             self.log_writer.log(
                 f"Got {fname} info from {container} container", log_file

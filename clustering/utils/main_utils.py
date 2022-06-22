@@ -1,4 +1,5 @@
 from blob_operations import Blob_Operation
+from matplotlib.pyplot import plot, savefig, title, xlabel, ylabel
 
 from utils.logger import App_Logger
 from utils.read_params import read_params
@@ -19,7 +20,7 @@ class Main_Utils:
 
         self.config = read_params()
 
-        self.log_dir = self.config["log_dir"]
+        self.log_dir = self.config["dir"]["log"]
 
         self.files = self.config["files"]
 
@@ -95,7 +96,7 @@ class Main_Utils:
         self.log_writer.start_log("start", self.class_name, method_name, log_file)
 
         try:
-            data = self.blob.read_csv(self.files[key], "feature_store", log_file)
+            data = self.blob.read_csv(key, "feature_store", log_file)
 
             self.log_writer.log(
                 f"Got the training data based on {key} from feature store container",
@@ -139,6 +140,33 @@ class Main_Utils:
             self.log_writer.log(
                 f"Uploaded {cluster_fname} file to feature store container", log_file,
             )
+
+            self.log_writer.start_log("exit", self.class_name, method_name, log_file)
+
+        except Exception as e:
+            self.log_writer.exception_log(e, self.class_name, method_name, log_file)
+
+    def save_and_upload_elbow_plot(self, max_clusters, wcss, log_file):
+        method_name = self.save_and_upload_elbow_plot.__name__
+
+        self.log_writer.start_log("start", self.class_name, method_name, log_file)
+
+        try:
+            plot(range(1, max_clusters), wcss)
+
+            title("The Elbow Method")
+
+            xlabel("Number of clusters")
+
+            ylabel("WCSS")
+
+            savefig(self.files["elbow_plot"])
+
+            self.log_writer.log("Saved local copy of elbow plot", log_file)
+
+            self.blob.upload_file("elbow_plot", "elbow_plot", "io_files", log_file)
+
+            self.log_writer.log("Uploaded elbow plot to container", log_file)
 
             self.log_writer.start_log("exit", self.class_name, method_name, log_file)
 

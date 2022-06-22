@@ -3,7 +3,7 @@ blob_container:
   model: climate-model
   logs: climate-logs
   feature_store: climate-feature-store
-  
+
 files:
   features: climate_train_features.csv
   targets: climate_train_targets.csv
@@ -13,13 +13,12 @@ log:
   clustering: train_clustering_log.txt
   upload: upload_train_cluster_log.txt
 
-log_dir: clustering_logs
-
 base:
   random_state: 42
 
-model_dir:
-  trained: trained
+dir:
+  trained_model: trained
+  log: clustering_logs
 
 KMeans:
   init: k-means++
