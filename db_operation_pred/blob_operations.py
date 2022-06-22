@@ -25,6 +25,10 @@ class Blob_Operation:
 
         self.container = self.config["blob_container"]
 
+        self.dir = self.config["dir"]
+
+        self.files = self.config["files"]
+
         self.class_name = self.__class__.__name__
 
         self.log_writer = App_Logger()
@@ -84,7 +88,7 @@ class Blob_Operation:
             )
 
             blob_client = client.get_blob_client(
-                self.container[container], blob=blob_fname
+                self.container[container], blob=self.files[blob_fname]
             )
 
             self.log_writer.log(
@@ -120,7 +124,7 @@ class Blob_Operation:
 
             folder = folder_name + "/"
 
-            blob_list = client.list_blobs(name_starts_with=folder)
+            blob_list = client.list_blobs(name_starts_with=self.dir[folder])
 
             f_name_lst = [f.name for f in blob_list]
 
@@ -288,7 +292,7 @@ class Blob_Operation:
         try:
             client = self.get_container_client(container, log_file)
 
-            client.delete_blob(fname)
+            client.delete_blob(self.files[fname])
 
             self.log_writer.log(
                 f"Deleted {fname} file from {container} container", log_file
@@ -365,18 +369,19 @@ class Blob_Operation:
 
                 self.log_writer.log(
                     f"{container_fname} file exists is {f}, and replace option is set to {replace}..Deleting the file",
+                    log_file,
                 )
 
                 if f is True:
-                    self.delete_file(
-                        container_fname, container,
-                    )
+                    self.delete_file(container_fname, container, log_file)
 
                 else:
-                    self.log_writer.log(f"{container_fname} file exists is {f}",)
+                    self.log_writer.log(
+                        f"{container_fname} file exists is {f}", log_file
+                    )
 
-                with open(file=local_fname, mode="rb") as f:
-                    client.upload_blob(data=f, name=container_fname)
+                with open(file=self.files[local_fname], mode="rb") as f:
+                    client.upload_blob(data=f, name=self.container[container_fname])
 
                 self.log_writer.log(
                     f"Uploaded {local_fname} to {container} container with name as {container_fname} file",
@@ -423,7 +428,7 @@ class Blob_Operation:
         self.log_writer.start_log("start", self.class_name, method_name, log_file)
 
         try:
-            dataframe.to_csv(local_fname, index=None, header=True)
+            dataframe.to_csv(self.files[local_fname], index=None, header=True)
 
             self.log_writer.log(
                 f"Created a local copy of dataframe with name {local_fname}", log_file
