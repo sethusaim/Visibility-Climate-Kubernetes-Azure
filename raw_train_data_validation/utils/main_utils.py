@@ -20,7 +20,7 @@ class Main_Utils:
 
         self.log_dir = self.config["log_dir"]
 
-        self.data_dir = self.config["data_dir"]
+        self.dir = self.config["dir"]
 
     def upload_logs(self):
         method_name = self.upload_logs.__name__
@@ -50,13 +50,13 @@ class Main_Utils:
         except Exception as e:
             self.log_writer.exception_log(e, self.class_name, method_name, "upload")
 
-    def get_train_fname(self, key, fname, log_file):
-        method_name = self.get_train_fname.__name__
+    def get_filename(self, key, fname, log_file):
+        method_name = self.get_filename.__name__
 
         self.log_writer.start_log("start", self.class_name, method_name, log_file)
 
         try:
-            train_fname = self.data_dir[key] + "/" + fname
+            train_fname = self.dir[key] + "/" + fname
 
             self.log_writer.log(f"Got the train file name for {key}", log_file)
 

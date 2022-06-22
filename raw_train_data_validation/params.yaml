@@ -4,16 +4,15 @@ blob_container:
   raw_train_data: climate-raw-data
   train_data: climate-train-data
 
-data_dir:
-  raw_train_batch: train_batch
-  train_good: good/train  
-  train_bad: bad/train
+dir:
+  raw_train_batch_data: train_batch
+  train_good_data: good/train
+  train_bad_data: bad/train
+  log: raw_train_data_validation_logs
 
 files:
   train_schema: climate-schema_training.json
   regex: climate-regex.txt
-
-log_dir: raw_train_data_validation_logs
 
 log:
   upload: upload_log.txt
