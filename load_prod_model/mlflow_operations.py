@@ -195,13 +195,13 @@ class MLFlow_Operation:
             )
 
     def transition_mlflow_model(
-        self, model_version, stage, model_name, from_bucket, to_bucket
+        self, model_version, stage, model_name, from_container, to_container
     ):
         """
         Method Name :   transition_mlflow_model
-        Description :   This method transitions mlflow model from one stage to other stage, and does the same in blob bucket
+        Description :   This method transitions mlflow model from one stage to other stage, and does the same in blob container
         
-        Output      :   A mlflow model is transitioned from one stage to another, and same is reflected in blob bucket
+        Output      :   A mlflow model is transitioned from one stage to another, and same is reflected in blob container
         On Failure  :   Write an exception log and then raise an exception
         
         Version     :   1.2
@@ -249,9 +249,9 @@ class MLFlow_Operation:
 
                 self.blob.copy_data(
                     train_model_file,
-                    from_bucket,
+                    from_container,
                     prod_model_file,
-                    to_bucket,
+                    to_container,
                     self.log_file,
                 )
 
@@ -270,9 +270,9 @@ class MLFlow_Operation:
 
                 self.blob.copy_data(
                     train_model_file,
-                    from_bucket,
+                    from_container,
                     stag_model_file,
-                    to_bucket,
+                    to_container,
                     self.log_file,
                 )
 
@@ -294,7 +294,7 @@ class MLFlow_Operation:
         """
         Method Name :   transition_best_models
         Description :   This method transitions the models to staging or production based on the condition nad moves the models within
-                        blob buckets also.
+                        blob containers also.
         
         Output      :   A list of registered models in the mentioned order
         On Failure  :   Write an exception log and then raise an exception
